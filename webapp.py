@@ -9,6 +9,7 @@ app.secret_key = "ABC"
 
 # connected_users --> {username: ['room1 they're in', 'room2', 'room3']}
 connected_users = {'AskRonnie': []}
+next_state = None
 
 class UserUnAuth(Exception):
 	"""User isn't logged in."""
@@ -138,22 +139,28 @@ def test_message(message):
 
 @socketio.on('talk to ronnie', namespace='/chat')
 def talk_to_ronnie(message):
+	global next_state
 	print bot.last_state
 	answer = message['message']#.lower()
 	if "hi" in answer or "hello" in answer and "ronnie" in answer:
-		response = bot.traverse_questions(0, None)
+		next_state, question = bot.traverse_questions(0, None)
+		bot.last_state = 0
+		send_message("Well hello there friend!\n" + question, message['room'])
+	elif next_state == 1:
 		bot.last_state = 1
-		send_message("Well hello there friend!\n" + response, message['room'])
-	elif bot.last_state == 1:
-		bot.last_state, question = bot.traverse_questions(1, answer)
+		next_state, question = bot.traverse_questions(1, answer)
+		print "next state: ", next_state
+		print "question: ", question
 		print bot.query
-		print bot.last_state
 		send_message(question, message['room'])
 	else:
-		print bot.last_state
-		bot.last_state, question = bot.traverse_questions(bot.last_state, answer)
-		print bot.last_state
+		print "last state: ", bot.last_state
+		bot.last_state = next_state
+		next_state, question = bot.traverse_questions(next_state, answer)
+		# print bot.last_state
+		print "next_state: ", next_state
 		print question
+		send_message(question, message['room'])
 
 
 @socketio.on('receive command', namespace='/chat')

@@ -153,7 +153,7 @@ def traverse_questions(last_state, user_answer):
 	   Gets the next state from that branch.
 	   Adds that state to the list tracking the path of states.
 
-	   Returns the next state"""
+	   Returns the next state and that state's question"""
 
 	global question_path
 	global query
@@ -164,7 +164,7 @@ def traverse_questions(last_state, user_answer):
 
 
 	if last_state == 0:
-		return d[1]['bot_statement']
+		return 1, d[1]['bot_statement']
 
 	if last_state == 1:
 		next_state = d[1]['branches']['answer'][0]
@@ -175,11 +175,13 @@ def traverse_questions(last_state, user_answer):
 
 	if d[locals()['last_state']]['return'] == 'question':
 	# answer = user_answer.split()
+
 		for branch in d[locals()['last_state']]['branches']:
 				for each in branch:
 					if each in user_answer:
 						# print each
 						next_state = d[locals()['last_state']]['branches'][locals()['branch']][0]
+						bot_question = d[locals()['next_state']]['bot_statement']
 						# print "next state: ", next_state
 						answer_branch = branch
 						question_path.append((last_state, answer_branch))
@@ -198,6 +200,7 @@ def traverse_questions(last_state, user_answer):
 								print "all: ", results
 							else:
 								print "it's empty"
+		# return next_state, 
 
 
 	if d[locals()['last_state']]['return'] == 'query':
@@ -221,7 +224,7 @@ def traverse_questions(last_state, user_answer):
 		print "I give you...", a[0]
 
 	print "next state", next_state				
-	return next_state, bot_question
+	return next_state, locals()['bot_question']
 
 
 def project_logic():

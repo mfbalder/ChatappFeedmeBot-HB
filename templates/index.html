@@ -109,7 +109,9 @@
 			var message = this_.find("input[name='message']").val();
 			if(chat_room.indexOf("AskRonnie" != -1)){
 				console.log("ronnie!");
-				socket.emit("talk to ronnie", {'message': message, 'room': chat_room})
+				$("#" + chat_room + " div.log").append('<p>' + logged_in_user + ': ' + message + '</p>');
+	    		$(".log").scrollTop($(".log")[0].scrollHeight);
+	    		socket.emit("talk to ronnie", {'message': message, 'room': chat_room})
 			}
 			else{
 			// console.log(this_.parent(".chat_box").attr("id"))
