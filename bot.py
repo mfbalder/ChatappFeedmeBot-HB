@@ -130,8 +130,8 @@ d = {
 		}
 	}, 
 	15: {
-		'return': 'query',
-		'bot_statement': "Here are your category choices. Pick one.",
+		'return': 'prequery',
+		'bot_statement': "Here are your category choices. Pick one: ",
 		'next_step': [20, " AND EXISTS(SELECT 1 FROM categories as c6 WHERE c6.business_id=r.id AND c6.category = '?') AND EXISTS(SELECT 1 from categorylookup as l WHERE l.category=c.category)", "add_to_query"]
 	},
 	16: {
@@ -142,6 +142,7 @@ d = {
 	}
 
 }
+
 
 
 
@@ -203,25 +204,27 @@ def traverse_questions(last_state, user_answer):
 		# return next_state, 
 
 
-	if d[locals()['last_state']]['return'] == 'query':
+	if d[locals()['last_state']]['return'] == 'prequery':
 		cat_choices = query.replace('r.name', 'c.category') + " AND r.stars>=4 GROUP BY c.category"
 		print cat_choices
 		bot_question = d[locals()['last_state']]['bot_statement']
-		print bot_question
+		# print bot_question
 		cursor.execute(cat_choices)
 		results = cursor.fetchall()
-		result_choices = random.sample(results, 5)
+		result_choices = ", ".join(random.sample(results, 5))
 		print result_choices
-		for item in result_choices:
-			print item[0]
+		# for item in result_choices:
+		# 	print item[0]
+		return d[locals()['last_state']]['next_step'][0], locals()['bot_question'] + result_choices
 
-		answer = raw_input()
+		# answer = raw_input()
 
-		next_state = d[locals()['last_state']]['next_step'][0]
-		query_addition = d[locals()['last_state']]['next_step'][1].replace('?', answer)
-		cursor.execute(query + query_addition + " ORDER BY r.stars LIMIT 1")
-		a = cursor.fetchone()
-		print "I give you...", a[0]
+		# next_state = d[locals()['last_state']]['next_step'][0]
+		# query_addition = d[locals()['last_state']]['next_step'][1].replace('?', answer)
+		# cursor.execute(query + query_addition + " ORDER BY r.stars LIMIT 1")
+		# a = cursor.fetchone()
+		# print "I give you...", a[0]
+
 
 	print "next state", next_state				
 	return next_state, locals()['bot_question']
