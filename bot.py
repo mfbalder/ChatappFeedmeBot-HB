@@ -171,19 +171,19 @@ def traverse_questions(last_state, user_answer):
 		query_piece = d[1]['branches']['answer'][1].replace('?', user_answer)
 		query = query + query_piece
 		cursor.execute(query)
-		return next_state
+		return next_state, d[2]['bot_statement']
 
 	if d[locals()['last_state']]['return'] == 'question':
 	# answer = user_answer.split()
 		for branch in d[locals()['last_state']]['branches']:
 				for each in branch:
 					if each in user_answer:
-						print each
+						# print each
 						next_state = d[locals()['last_state']]['branches'][locals()['branch']][0]
-						print "next state: ", next_state
+						# print "next state: ", next_state
 						answer_branch = branch
 						question_path.append((last_state, answer_branch))
-						print question_path
+						# print question_path
 
 
 						query_action = d[locals()['last_state']]['branches'][locals()['branch']][2]

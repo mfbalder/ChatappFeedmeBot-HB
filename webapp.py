@@ -66,6 +66,9 @@ def logout():
 		print "session in logout ", session
 		print "I think you are ", session.get("user")
 
+		# reset Ronnie
+		bot.last_state = 0
+
 		# reload the login page
 		print "This is the list of connected users after %s has logged out" % user
 		print connected_users
@@ -136,15 +139,16 @@ def test_message(message):
 @socketio.on('talk to ronnie', namespace='/chat')
 def talk_to_ronnie(message):
 	print bot.last_state
-	answer = message['message'].lower()
+	answer = message['message']#.lower()
 	if "hi" in answer or "hello" in answer and "ronnie" in answer:
 		response = bot.traverse_questions(0, None)
 		bot.last_state = 1
 		send_message("Well hello there friend!\n" + response, message['room'])
 	elif bot.last_state == 1:
-		bot.last_state = bot.traverse_questions(1, answer)
+		bot.last_state, question = bot.traverse_questions(1, answer)
 		print bot.query
 		print bot.last_state
+		send_message(question, message['room'])
 	else:
 		print bot.last_state
 		bot.last_state, question = bot.traverse_questions(bot.last_state, answer)
