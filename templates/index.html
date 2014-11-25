@@ -104,15 +104,12 @@
 			event.preventDefault();
 			var this_ = $(this)
 			var chat_room = this_.parent(".chat_box").attr("id");
+			console.log(chat_room);
 			console.log(this_.serialize());
 			var message = this_.find("input[name='message']").val();
-			if(this_.hasClass("encrypted")){
-				console.log("do encryption now!");
-				// Encrypt with the public key...
-          		var encrypt = new JSEncrypt();
-          		encrypt.setPublicKey(other_public_key);
-          		var encrypted = encrypt.encrypt(message);
-          		socket.emit('my event', {data: encrypted, 'room': chat_room});
+			if(chat_room.indexOf("AskRonnie" != -1)){
+				console.log("ronnie!");
+				socket.emit("talk to ronnie", {'message': message, 'room': chat_room})
 			}
 			else{
 			// console.log(this_.parent(".chat_box").attr("id"))

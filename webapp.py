@@ -1,5 +1,6 @@
 from flask import Flask, render_template, session, request, redirect
 from flask.ext.socketio import SocketIO, emit, join_room, leave_room, send
+import bot
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
@@ -7,7 +8,7 @@ socketio = SocketIO(app)
 app.secret_key = "ABC"
 
 # connected_users --> {username: ['room1 they're in', 'room2', 'room3']}
-connected_users = {'AskRonnie!': []}
+connected_users = {'AskRonnie': []}
 
 class UserUnAuth(Exception):
 	"""User isn't logged in."""
@@ -123,7 +124,33 @@ def refresh_connecteduser_lists():
 def test_message(message):
 	"""Called when a message is submitted, sends message back to the client to be displayed"""
 	print message['data']
-	send_message(message['data'], message['room'])
+	if message['room'] == 'AskRonniem':
+		print "It's Ronnie!"
+		answer = message['data'].lower()
+		if "hi" in answer or "hello" in answer and "ronnie" in answer:
+			send_message("Well hello there friend!", message['room'])
+
+	else:
+		send_message(message['data'], message['room'])
+
+@socketio.on('talk to ronnie', namespace='/chat')
+def talk_to_ronnie(message):
+	print bot.last_state
+	answer = message['message'].lower()
+	if "hi" in answer or "hello" in answer and "ronnie" in answer:
+		response = bot.traverse_questions(0, None)
+		bot.last_state = 1
+		send_message("Well hello there friend!\n" + response, message['room'])
+	elif bot.last_state == 1:
+		bot.last_state = bot.traverse_questions(1, answer)
+		print bot.query
+		print bot.last_state
+	else:
+		print bot.last_state
+		bot.last_state, question = bot.traverse_questions(bot.last_state, answer)
+		print bot.last_state
+		print question
+
 
 @socketio.on('receive command', namespace='/chat')
 def receive_command(command):
