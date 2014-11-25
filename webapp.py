@@ -7,7 +7,7 @@ socketio = SocketIO(app)
 app.secret_key = "ABC"
 
 # connected_users --> {username: ['room1 they're in', 'room2', 'room3']}
-connected_users = {}
+connected_users = {'RonnieBot': []}
 
 class UserUnAuth(Exception):
 	"""User isn't logged in."""
