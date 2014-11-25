@@ -65,16 +65,7 @@
 			if(command == 'UL'){
 				$("#online_users").load("/refresh_users?user=" + logged_in_user);
 			}
-			// if the command is "public key"
-			if(command == "PUK"){
-				// set your received public key
-				other_public_key = command_body["key"];
-				console.log("public key received: " + other_public_key);
-				// generate your own set of keys
-				// generateKeys();
-				// socket.emit('complete pubkey exchange', {'key': user_public_key, 'receiving_user': command_origin, 'sending_user': logged_in_user, 'encrypted_room': command_body["encrypted_room"]});
 
-			}
 		});
 
 		// when the current user clicks on a connected user
@@ -102,56 +93,6 @@
 				console.log("The chatroom doesn't exist yet, add it");
 				var html = event.template;
 				$("#chat_section").append(html);
-
-				function handleFiles(files) {
-  for (var i = 0; i < files.length; i++) {
-    var file = files[i];
-    var imageType = /image.*/;
-    
-    if (!file.type.match(imageType)) {
-      continue;
-    }
-    
-    var img = document.createElement("img");
-    img.classList.add("obj");
-    img.file = file;
-    $(".log").append(img); // Assuming that "preview" is a the div output where the content will be displayed.
-    
-    var reader = new FileReader();
-    reader.onload = (function(aImg) { return function(e) { aImg.src = e.target.result; }; })(img);
-    reader.readAsDataURL(file);
-  }
-}
-
-				var dropbox = document.getElementById("dropbox");
-				console.log(dropbox);
-				dropbox.addEventListener("dragenter", dragenter, false);
-				dropbox.addEventListener("dragover", dragover, false);
-				dropbox.addEventListener("drop", drop, false);
-
-				function dragenter(e) {
-					e.stopPropagation();
-					e.preventDefault();
-				}
-
-				function dragover(e) {
-					e.stopPropagation();
-					e.preventDefault();
-				}
-
-				function drop(e) {
-					console.log("drop");
-		  			e.stopPropagation();
-		  			e.preventDefault();
-
-		  			var dt = e.dataTransfer;
-		  			console.log("dt" + dt)
-		  			var files = dt.files;
-		  			console.log("files" + files)
-
-		  			handleFiles(files);
-		  			console.log("fileList" + fileList)
-				}
 			}
 			else {
 				console.log("The chatroom already exists. Don't add it");
@@ -218,33 +159,7 @@
 			socket.emit('refresh connected users');			
 		});
 
-		var generateKeys = function(){
-			console.log("generate the keys!");
-      		var keySize = 1024;
-      		var crypt = new JSEncrypt({default_key_size: keySize});
-      		// var async = $('#async-ck').is(':checked');
-      		var dt = new Date();
-      		var time = -(dt.getTime());
-        	
-		    crypt.getKey();
-		    dt = new Date();
-		    time += (dt.getTime());
-		    user_private_key = crypt.getPrivateKey();
-		    console.log("private key" + user_private_key);
-		    user_public_key = crypt.getPublicKey();
-		    console.log("public key" + user_public_key);
-		    };
-
-		// to generate keys
-		$(document).on('click', 'input.encrypt_chat', function(event){
-			var encrypted_room = $(this).parents(".chat_box").attr("id");
-			generateKeys();
-			var receiving_pubkey = $(this).parents(".send_message").find("input[type='hidden']").attr("value");
-			console.log(receiving_pubkey);
-			socket.emit('initiate pubkey exchange', {'key': user_public_key, 'receiving_user': receiving_pubkey, 'sending_user': logged_in_user, 'encrypted_room': encrypted_room});
-			// $(this).parents(".send_message").addClass("encrypted");
-
-		});
+		
 
 
 		

@@ -7,7 +7,7 @@ socketio = SocketIO(app)
 app.secret_key = "ABC"
 
 # connected_users --> {username: ['room1 they're in', 'room2', 'room3']}
-connected_users = {'RonnieBot': []}
+connected_users = {'AskRonnie!': []}
 
 class UserUnAuth(Exception):
 	"""User isn't logged in."""
@@ -108,18 +108,7 @@ def send_command(command, body, room, origin=None):
 
 # socket events
 
-@socketio.on('complete pubkey exchange', namespace='/chat')
-def complete_pubkey_exchange(data):
-	print data
-	emit('app message display', {'message': "Your chat has been encrypted!", 'user': session['user'], 'room': data["encrypted_room"]}, room=data["encrypted_room"])
-	# send_message("Your chat has been encrypted!", data["encrypted_room"])
 
-
-@socketio.on('initiate pubkey exchange', namespace='/chat')
-def receive_pubkey(data):
-	send_command('PUK', {'key':data["key"], 'encrypted_room':data["encrypted_room"]}, data["receiving_user"], data["sending_user"])
-	message = "%s has initiated encryption for this conversation. Click 'Encrypt Chat' to complete" % data["sending_user"]
-	send_message(message, data["encrypted_room"])
 
 @socketio.on('refresh connected users', namespace='/chat')
 def refresh_connecteduser_lists():
