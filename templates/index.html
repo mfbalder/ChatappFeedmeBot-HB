@@ -1,0 +1,260 @@
+
+	{% extends "base.html" %}
+	{% block body %}
+
+	<div id="online_users">
+		<h4>{{ user }}'s Connected Users</h4>
+		{% if users %}
+			<ul>
+			{% for user in users %}
+				<li><a class="user_link" id="{{ user }}" href="#">{{ user }}</a></li>
+			{% endfor %}
+			</ul>
+		{% endif %}
+	</div>
+
+	<div id="chat_section">
+	</div>
+
+
+
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/0.9.16/socket.io.min.js"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
+	<script>
+	$(document).ready(function(){
+
+		// sets the current user and current room
+		var logged_in_user="{{ user }}";
+		console.log(logged_in_user);
+		var current_room = "";
+		var user_private_key = null;
+		var user_public_key = null;
+		var other_public_key = null;
+
+
+		// connect the socket
+	    var socket = io.connect('http://' + document.domain + ':' + location.port + "/chat");
+
+
+	    // joins the current user to their own personal room
+		socket.emit(
+				'join room', 
+				{'username': logged_in_user, 
+				 'room': logged_in_user
+				});
+		socket.emit('refresh connected users');
+		console.log("The " + logged_in_user + " is being added to room:" + logged_in_user);
+
+		// when a user's room receives a command
+		socket.on('interpret command', function(data){
+			var command = data.command
+			var command_body = data.body
+			var command_origin = data.origin
+
+			// if that command is a J (for join), join them to the given room
+			if(command == 'J'){
+				console.log("join");
+				var new_room = command_body
+				socket.emit('join room', {'username': logged_in_user, 'room': new_room}); 
+				$('#chat_box').removeClass("hidden");
+				// establish that this new room is the room we're currently talking in
+				current_room = new_room
+			}
+			// if the user receives a UL (update list) command, refresh their list of connected users
+			if(command == 'UL'){
+				$("#online_users").load("/refresh_users?user=" + logged_in_user);
+			}
+			// if the command is "public key"
+			if(command == "PUK"){
+				// set your received public key
+				other_public_key = command_body["key"];
+				console.log("public key received: " + other_public_key);
+				// generate your own set of keys
+				// generateKeys();
+				// socket.emit('complete pubkey exchange', {'key': user_public_key, 'receiving_user': command_origin, 'sending_user': logged_in_user, 'encrypted_room': command_body["encrypted_room"]});
+
+			}
+		});
+
+		// when the current user clicks on a connected user
+		$(document).on('click', '.user_link', function(event) {
+			var user_to_talk_to = $(this).attr('id');
+			// create a new room name for the two users to share
+			if(user_to_talk_to < logged_in_user){
+				var new_room = user_to_talk_to + logged_in_user;
+			} 
+			else {
+				var new_room = logged_in_user + user_to_talk_to;
+			}
+
+
+			// send command to user_to_talk_to's room
+			socket.emit('receive command', {'command': 'J', 'body':new_room, 'room': user_to_talk_to});
+			// send command to logged_in_user's room
+			socket.emit('receive command', {'command': 'J', 'body':new_room, 'room': logged_in_user});
+			socket.emit('open chat', {'submitting': logged_in_user, 'receiving': user_to_talk_to, 'room': new_room});
+
+		});
+
+		socket.on('open chat box', function(event){
+			if($("#" + event.chat_room).length === 0){
+				console.log("The chatroom doesn't exist yet, add it");
+				var html = event.template;
+				$("#chat_section").append(html);
+
+				function handleFiles(files) {
+  for (var i = 0; i < files.length; i++) {
+    var file = files[i];
+    var imageType = /image.*/;
+    
+    if (!file.type.match(imageType)) {
+      continue;
+    }
+    
+    var img = document.createElement("img");
+    img.classList.add("obj");
+    img.file = file;
+    $(".log").append(img); // Assuming that "preview" is a the div output where the content will be displayed.
+    
+    var reader = new FileReader();
+    reader.onload = (function(aImg) { return function(e) { aImg.src = e.target.result; }; })(img);
+    reader.readAsDataURL(file);
+  }
+}
+
+				var dropbox = document.getElementById("dropbox");
+				console.log(dropbox);
+				dropbox.addEventListener("dragenter", dragenter, false);
+				dropbox.addEventListener("dragover", dragover, false);
+				dropbox.addEventListener("drop", drop, false);
+
+				function dragenter(e) {
+					e.stopPropagation();
+					e.preventDefault();
+				}
+
+				function dragover(e) {
+					e.stopPropagation();
+					e.preventDefault();
+				}
+
+				function drop(e) {
+					console.log("drop");
+		  			e.stopPropagation();
+		  			e.preventDefault();
+
+		  			var dt = e.dataTransfer;
+		  			console.log("dt" + dt)
+		  			var files = dt.files;
+		  			console.log("files" + files)
+
+		  			handleFiles(files);
+		  			console.log("fileList" + fileList)
+				}
+			}
+			else {
+				console.log("The chatroom already exists. Don't add it");
+			}
+			return false;
+		});
+
+		$(document).on('submit', 'form', function(event){
+			event.preventDefault();
+			var this_ = $(this)
+			var chat_room = this_.parent(".chat_box").attr("id");
+			console.log(this_.serialize());
+			var message = this_.find("input[name='message']").val();
+			if(this_.hasClass("encrypted")){
+				console.log("do encryption now!");
+				// Encrypt with the public key...
+          		var encrypt = new JSEncrypt();
+          		encrypt.setPublicKey(other_public_key);
+          		var encrypted = encrypt.encrypt(message);
+          		socket.emit('my event', {data: encrypted, 'room': chat_room});
+			}
+			else{
+			// console.log(this_.parent(".chat_box").attr("id"))
+				socket.emit('my event', {data: message, 'room': chat_room});
+			}
+			this_.find("input[name='message']").val("");
+		});
+
+		// if the user closes the window, remove it from their DOM
+		$(document).on('click', '.end_chat', function(event){
+			// send a message telling the other user that the chat has been exited
+			socket.emit("my event", {data: logged_in_user + " has left the chat.", 'room': $(this).parent(".chat_box").attr("id")});
+			$(this).parent(".chat_box").remove();
+			// remove the user from that joint room
+		});
+
+
+
+	    // when the user sends a message, relay that message to the server
+	    // $('form#send_message').submit(function(event){
+	    // 	event.preventDefault();
+	    // 	socket.emit('my event', {data: $("#message").val(), 'room': current_room});
+	    // 	$("#message").val("");
+	    // });
+
+	    // when the client gets that message back from the server,
+	    // display it in the log
+	    socket.on('message to display', function(response){
+	    	var chat_room = response.room;
+	    	// console.log($("#" + chat_room + " div.log"));
+	    	$("#" + chat_room + " div.log").append('<p>' + response.user + ': ' + response.message + '</p>');
+	    	$(".log").scrollTop($(".log")[0].scrollHeight);
+	    });
+
+	    socket.on('app message display', function(response){
+	    	var chat_room = response.room;
+	    	$("#" + chat_room + " div.log").append('<p>' + response.message + '</p>');
+	    	$(".log").scrollTop($(".log")[0].scrollHeight);
+	    	$("#" + chat_room + " .send_message").addClass("encrypted");
+	    });
+
+		// when a user logs out, tell all users to fresh their conencted list
+		$(document).on('click', '#logout', function(event){
+			socket.emit('refresh connected users');			
+		});
+
+		var generateKeys = function(){
+			console.log("generate the keys!");
+      		var keySize = 1024;
+      		var crypt = new JSEncrypt({default_key_size: keySize});
+      		// var async = $('#async-ck').is(':checked');
+      		var dt = new Date();
+      		var time = -(dt.getTime());
+        	
+		    crypt.getKey();
+		    dt = new Date();
+		    time += (dt.getTime());
+		    user_private_key = crypt.getPrivateKey();
+		    console.log("private key" + user_private_key);
+		    user_public_key = crypt.getPublicKey();
+		    console.log("public key" + user_public_key);
+		    };
+
+		// to generate keys
+		$(document).on('click', 'input.encrypt_chat', function(event){
+			var encrypted_room = $(this).parents(".chat_box").attr("id");
+			generateKeys();
+			var receiving_pubkey = $(this).parents(".send_message").find("input[type='hidden']").attr("value");
+			console.log(receiving_pubkey);
+			socket.emit('initiate pubkey exchange', {'key': user_public_key, 'receiving_user': receiving_pubkey, 'sending_user': logged_in_user, 'encrypted_room': encrypted_room});
+			// $(this).parents(".send_message").addClass("encrypted");
+
+		});
+
+
+		
+
+
+
+
+
+	});
+	</script>
+
+	{% endblock %}
+

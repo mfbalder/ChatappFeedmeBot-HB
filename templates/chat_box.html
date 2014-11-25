@@ -1,0 +1,18 @@
+<div class="user_box">
+	<div class="chat_box" id="{{ room }}">
+		<button class="end_chat button_style">X</button>
+		<p>Chat Between You and {{ receiving_user }}</p>
+		<div class="log">
+		</div>
+
+		<form class="send_message">
+			<input name="message" type="text" placeholder="Your message">
+			<input type="submit" class="button_style">
+			<input type="hidden" value="{{ receiving_user }}">
+			<input type="button" class="encrypt_chat button_style" value="Encrypt Chat">
+		</form>
+
+	</div>
+	<div class="file_drag" id="dropbox">
+	</div>
+</div>
