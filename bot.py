@@ -34,7 +34,7 @@ d = {
 		'return': 'question',
 		'bot_statement': 'Snack or meal?',
 		'branches': {
-			('snack',): [6, " AND EXISTS(SELECT 1 FROM categories as c2 WHERE c2.business_id=r.id AND c2.category IN ('Bakeries', 'Ice Cream & Frozen Yogurt', 'Donuts', 'Cafes', 'Candy Stores', 'Desserts', 'Pretzels', 'Cupcakes', 'Gelato'))", 'add_to_query', "c2"],
+			('snack',): [6, " AND EXISTS(SELECT 1 FROM categories as c2 WHERE c2.business_id=r.id AND c2.category IN ('Bakeries', 'Ice Cream & Frozen Yogurt', 'Donuts', 'Cafes', 'Candy Stores', 'Desserts', 'Pretzels', 'Cupcakes', 'Gelato', 'Patisserie/Cake Shop', 'Shaved Ice'))", 'add_to_query', "c2"],
 			('meal',): [5, " AND EXISTS(SELECT 1 FROM categories as c2 WHERE c2.business_id=r.id AND c2.category IN ('Restaurants'))", "add_to_query", None]
 		}
 	},
@@ -59,8 +59,8 @@ d = {
 		'return': 'question',
 		'bot_statement': 'Personally WOOF! I really like tennis balls and peanut butter. Which do you prefer?',
 		'branches': {
-			('tennis ball', 'ball'): [15, " AND EXISTS(SELECT 1 FROM categories as c3 WHERE c3.business_id=r.id AND c3.category IN ('Donuts', 'Desserts', 'Bakeries', 'Cafes', 'Cupcakes', 'Pretzels'))", "add_to_query"],
-			('peanut',): [15, " AND EXISTS(SELECT 1 FROM categories as c3 WHERE c3.business_id=r.id AND c3.category IN ('Ice Cream & Frozen Yogurt', 'Gelato'))", "add_to_query"],
+			('tennis ball', 'ball'): [15, " AND EXISTS(SELECT 1 FROM categories as c3 WHERE c3.business_id=r.id AND c3.category IN ('Donuts', 'Desserts', 'Bakeries', 'Cafes', 'Cupcakes', 'Pretzels', 'Patisserie/Cake Shop'))", "add_to_query"],
+			('peanut',): [15, " AND EXISTS(SELECT 1 FROM categories as c3 WHERE c3.business_id=r.id AND c3.category IN ('Ice Cream & Frozen Yogurt', 'Gelato', 'Shaved Ice'))", "add_to_query"],
 			('trick question',): [15, " AND EXISTS(SELECT 1 FROM categories as c3 WHERE c3.business_id=r.id AND c3.category = 'Candy Stores')", "add_to_query"]
 		}
 	},
@@ -83,7 +83,8 @@ d = {
 			('vegan',): [9, " AND r.vegan=True", "add_to_query"],
 			('gf', 'gluten', 'gluten-free'): [9, " AND (r.gluten_free=True OR EXISTS(SELECT 1 FROM categories as c5 WHERE c5.business_id=r.id AND c5.category='Gluten-Free'))", "add_to_query"],
 			('soy',): [9, " AND r.soy_free=True", "add_to_query"],
-			('halal',): [9, " AND r.halal=True", "add_to_query"]
+			('halal',): [9, " AND r.halal=True", "add_to_query"],
+			('kosher',): [9, " AND r.kosher=True AND EXISTS(SELECT 1 FROM categories at c5 WHERE c5.business_id=r.id AND c5.category='Kosher')", "add_to_query"]
 		}
 	},
 	9: {
@@ -226,7 +227,7 @@ def traverse_questions(last_state, user_answer):
 							return 20, "Here are your category choices. Pick one: " + choices
 
 						return next_state, locals()['bot_question']
-						
+
 		return None, None
 
 						# if next_state == 20:
@@ -262,6 +263,7 @@ def traverse_questions(last_state, user_answer):
 	# 	# print "I give you...", a[0]
 
 	if d[locals()['last_state']]['return'] == 'query':
+		user_answer = ' '.join([word.capitalize() for word in user_answer.split()])
 		final_search = " AND EXISTS(SELECT 1 FROM categories as c6 WHERE c6.business_id=r.id AND c6.category = '?') AND EXISTS(SELECT 1 from categorylookup as l WHERE l.category=c.category)".replace('?', user_answer)
 		query = query + final_search
 		cursor.execute(query)

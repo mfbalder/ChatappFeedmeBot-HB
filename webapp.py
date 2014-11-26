@@ -141,8 +141,8 @@ def test_message(message):
 def talk_to_ronnie(message):
 	global next_state
 	# print bot.last_state
-	answer = message['message']#.lower()
-	if "hi" in answer or "hello" in answer and "ronnie" in answer:
+	answer = message['message']
+	if "hi " in answer or "hello" in answer and "ronnie" in answer:
 		next_state, question = bot.traverse_questions(0, None)
 		# print "query: ", bot.query
 		bot.last_state = 0
@@ -167,6 +167,7 @@ def talk_to_ronnie(message):
 		# 	bot.traverse_questions(15, answer)
 
 		# print "last state: ", bot.last_state
+		answer = answer.lower()
 		bot.last_state = next_state
 		s, q = bot.traverse_questions(next_state, answer)
 		print "next state and question: ", s, q
