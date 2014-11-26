@@ -7,7 +7,11 @@
 		{% if users %}
 			<ul>
 			{% for user in users %}
-				<li><a class="user_link" id="{{ user }}" href="#">{{ user }}</a></li>
+				{% if user == 'AskRonnie' %}
+				<li><div class='logo' id='ronnielogo'></div><a class="user_link" id="{{ user }}" href="#">{{ user }}</a></li>
+				{% else %}
+				<li><div class='logo'></div><a class="user_link" id="{{ user }}" href="#">{{ user }}</a></li>
+				{% endif %}
 			{% endfor %}
 			</ul>
 		{% endif %}
@@ -72,6 +76,7 @@
 		$(document).on('click', '.user_link', function(event) {
 			var user_to_talk_to = $(this).attr('id');
 			// create a new room name for the two users to share
+
 			if(user_to_talk_to < logged_in_user){
 				var new_room = user_to_talk_to + logged_in_user;
 			} 
@@ -89,6 +94,7 @@
 		});
 
 		socket.on('open chat box', function(event){
+			console.log(event);
 			if($("#" + event.chat_room).length === 0){
 				console.log("The chatroom doesn't exist yet, add it");
 				var html = event.template;
@@ -107,7 +113,9 @@
 			console.log(chat_room);
 			console.log(this_.serialize());
 			var message = this_.find("input[name='message']").val();
-			if(chat_room.indexOf("AskRonnie" != -1)){
+
+			var ronnie = new RegExp('AskRonnie');
+			if(ronnie.test(chat_room)){
 				console.log("ronnie!");
 				$("#" + chat_room + " div.log").append('<p>' + logged_in_user + ': ' + message + '</p>');
 	    		$(".log").scrollTop($(".log")[0].scrollHeight);
@@ -150,7 +158,7 @@
 	    	var chat_room = response.room;
 	    	// if(chat_room.indexOf("AskRonnie" != -1)){
 	    	// 	user_label = "Ronnie";
-	    	
+
 	    	$("#" + chat_room + " div.log").append('<p>' + response.message + '</p>');
 	    	$(".log").scrollTop($(".log")[0].scrollHeight);
 	    	$("#" + chat_room + " .send_message").addClass("encrypted");

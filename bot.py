@@ -42,7 +42,7 @@ d = {
 		'return': 'question',
 		'bot_statement': 'Ok then. Is a stiff drink in order?',
 		'branches': {
-			('yes', 'ya', 'yeah', 'sure', 'definitely', 'yessir'): [10, " AND EXISTS(SELECT 1 FROM categories as c3 WHERE c3.business_id=r.id AND c3.category IN ('Bars', 'Breweries', 'Dive Bars', 'Sports Bars', 'Wine Bars', 'Pubs'))", "add_to_query", None],
+			('yes', 'ya', 'yeah', 'sure', 'definitely', 'yessir', 'please'): [10, " AND EXISTS(SELECT 1 FROM categories as c3 WHERE c3.business_id=r.id AND c3.category IN ('Bars', 'Breweries', 'Dive Bars', 'Sports Bars', 'Wine Bars', 'Pubs'))", "add_to_query", None],
 			('no', 'nope', 'nah', 'not'): [11, " AND EXISTS(SELECT 1 FROM categories as c3 WHERE c3.business_id=r.id AND c3.category IN ('Coffee & Tea', 'Cafes', 'Tea Rooms', 'Juice Bars & Smoothies'))", "add_to_query", None]
 		}
 	},
@@ -71,7 +71,7 @@ d = {
 			('eat in', 'in'): [8, None, None],
 			('takeout', 'tk', 'out', 'pick up'): [8, " AND r.takeout=True", "add_to_query"],
 			('delivery', 'deliver', 'delivered'): [8, " AND r.delivery=True", "add_to_query"],
-			("LAZY",): [8, " AND r.drive_thru=True", "add_to_query"]
+			('lazy',): [8, " AND r.drive_thru=True", "add_to_query"]
 		}
 	},
 	8: {
@@ -94,7 +94,7 @@ d = {
 			('poor', 'no money', 'feed me', 'please sir I want some more'): [15, " AND r.price_range=1", "add_to_query"],
 			('cheap', 'not too bad', 'just got a job'): [15, " AND r.price_range=2", "add_to_query"],
 			('going on a date', 'need to impress', 'pretend I haz money'): [15, " AND r.price_range=3", "add_to_query"],
-			('no object', 'rich', 'wealthy', 'darling', 'Mark Zuckerberg'): [15, " AND r.price_range=4", "add_to_query"],
+			('no object', 'rich', 'wealthy', 'darling', 'mark zuckerberg'): [15, " AND r.price_range=4", "add_to_query"],
 			('whatev',): [15]
 		}
 	},
@@ -137,7 +137,7 @@ d = {
 		'bot_statement': "Here are your category choices. Pick one: ",
 		'next_step': [20, " AND EXISTS(SELECT 1 FROM categories as c6 WHERE c6.business_id=r.id AND c6.category = '?') AND EXISTS(SELECT 1 from categorylookup as l WHERE l.category=c.category)", "add_to_query"]
 	},
-	16: {
+	16: {'return': 'query'
 
 	},
 	17: {
@@ -268,7 +268,7 @@ def traverse_questions(last_state, user_answer):
 		user_answer = ' '.join([word.capitalize() for word in user_answer.split()])
 		final_search = " AND EXISTS(SELECT 1 FROM categories as c6 WHERE c6.business_id=r.id AND c6.category = '?') AND EXISTS(SELECT 1 from categorylookup as l WHERE l.category=c.category)".replace('?', user_answer)
 		query = query + final_search
-		cursor.execute(query)
+		cursor.execute(query + " ORDER BY r.stars LIMIT 1")
 		result = cursor.fetchone()
 		print result
 		return None, "I give you..." + result[0] + "!"

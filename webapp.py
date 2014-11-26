@@ -84,6 +84,7 @@ def set_session():
 	user = request.args.get("user")
 	print "set_session: user=", user
 	session["user"] = user
+	# session["ronnie_nextstate"] = None
 	print session
 
 	# add that user to the list of connected users
@@ -140,7 +141,8 @@ def test_message(message):
 @socketio.on('talk to ronnie', namespace='/chat')
 def talk_to_ronnie(message):
 	global next_state
-	# print bot.last_state
+	print session
+
 	answer = message['message']
 	if "hi " in answer or "hello" in answer and "ronnie" in answer:
 		next_state, question = bot.traverse_questions(0, None)
@@ -169,7 +171,7 @@ def talk_to_ronnie(message):
 		# print "last state: ", bot.last_state
 		answer = answer.lower()
 		bot.last_state = next_state
-		s, q = bot.traverse_questions(next_state, answer)
+		s, q = bot.traverse_questions(session['ronnie_nextstate'], answer)
 		print "next state and question: ", s, q
 		if s == None and q == None:
 			emit('message to display', {'message': "That's cool!", 'user': 'Ronnie', 'room': message['room']}, room=message['room'])
