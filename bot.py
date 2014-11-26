@@ -26,7 +26,7 @@ d = {
 		'return': 'question',
 		'bot_statement': 'Are you hungry?',
 		'branches': {
-			('yes', 'ya', 'yeah', 'sure', 'definitely'): [3, " AND EXISTS(SELECT 1 FROM categories AS c1 WHERE c1.business_id=r.id AND c1.category NOT IN('Bars', 'Breweries', 'Coffee & Tea', 'Dive Bars', 'Sports Bars', 'Cafes', 'Tea Rooms', 'Wine Bars', 'Pubs'))", "add_to_query", 'c1'],
+			('yes', 'ya', 'yeah', 'sure', 'definitely'): [3, " AND EXISTS(SELECT 1 FROM categories AS c1 WHERE c1.business_id=r.id AND c1.category NOT IN('Bars', 'Breweries', 'Coffee & Tea', 'Dive Bars', 'Sports Bars', 'Cafes', 'Tea Rooms', 'Wine Bars', 'Pubs', 'Gastropubs', 'Beer Bar'))", "add_to_query", 'c1'],
 			('no', 'nope', 'nah', 'not'): [4, " AND EXISTS(SELECT 1 FROM categories AS c1 WHERE c1.business_id=r.id AND c1.category IN ('Bars', 'Breweries', 'Coffee & Tea', 'Dive Bars', 'Sports Bars', 'Cafes', 'Tea Rooms', 'Wine Bars', 'Pubs'))", 'add_to_query', 'c1']
 		}
 	},
@@ -43,7 +43,7 @@ d = {
 		'bot_statement': 'Ok then. Is a stiff drink in order?',
 		'branches': {
 			('yes', 'ya', 'yeah', 'sure', 'definitely', 'yessir'): [10, " AND EXISTS(SELECT 1 FROM categories as c3 WHERE c3.business_id=r.id AND c3.category IN ('Bars', 'Breweries', 'Dive Bars', 'Sports Bars', 'Wine Bars', 'Pubs'))", "add_to_query", None],
-			('no', 'nope', 'nah', 'not'): [11, " AND EXISTS(SELECT 1 FROM categories as c3 WHERE c3.business_id=r.id AND c3.category IN ('Coffee & Tea', 'Cafes', 'Tea Rooms'))", "add_to_query", None]
+			('no', 'nope', 'nah', 'not'): [11, " AND EXISTS(SELECT 1 FROM categories as c3 WHERE c3.business_id=r.id AND c3.category IN ('Coffee & Tea', 'Cafes', 'Tea Rooms', 'Juice Bars & Smoothies'))", "add_to_query", None]
 		}
 	},
 	5: {
@@ -83,7 +83,7 @@ d = {
 			('vegan',): [9, " AND r.vegan=True", "add_to_query"],
 			('gf', 'gluten', 'gluten-free'): [9, " AND (r.gluten_free=True OR EXISTS(SELECT 1 FROM categories as c5 WHERE c5.business_id=r.id AND c5.category='Gluten-Free'))", "add_to_query"],
 			('soy',): [9, " AND r.soy_free=True", "add_to_query"],
-			('halal',): [9, " AND r.halal=True", "add_to_query"],
+			('halal',): [9, " AND r.halal=True AND EXISTS(SELECT 1 FROM categories at c5 WHERE c5.business_id=r.id AND c5.category='Halal')", "add_to_query"],
 			('kosher',): [9, " AND r.kosher=True AND EXISTS(SELECT 1 FROM categories at c5 WHERE c5.business_id=r.id AND c5.category='Kosher')", "add_to_query"]
 		}
 	},
@@ -104,7 +104,8 @@ d = {
 		'branches': {
 			('intimate','quiet'): [12, " AND r.intimate=True", "add_to_query"],
 			('romantic', 'hot date'): [16, " AND r.romantic=True", "add_to_query"],
-			('chill', 'casual','yo'): [13, " AND (r.casual=True OR r.divey=True", "add_to_query"]
+			('chill', 'casual','yo'): [13, " AND (r.casual=True OR r.divey=True", "add_to_query"],
+			('whiskey', 'mixology', 'artisanal', 'craft', 'tapestry'): [14, " AND (r.hipster=True OR EXISTS(SELECT 1 FROM categories as c5 WHERE c5.business_id=r.id AND c5.category = 'Cocktail Bars'))", "add_to_query"]
 		}
 	},
 	11: {
@@ -112,7 +113,8 @@ d = {
 		'bot_statement': 'Do you have a preference for coffee or tea?\nTea, right? You know you like tea! (Tea.)',
 		'branches': {
 			('lovely cucumber sandwiches', 'high society'): [17, " AND EXISTS(SELECT 1 FROM categories AS c4 WHERE c4.business_id=r.id AND c4.category IN ('Tea Rooms')", "add_to_query"],
-			('nah', 'nope', 'no preference', "don't care", 'negative'): [17, None, None]
+			('nah', 'nope', 'no preference', "don't care", 'negative'): [17, None, None],
+			('caffeine free', 'juice', 'cleanse'): [17, " AND EXISTS(SELECT 1 FROM categories AS c4 WHERE c4.business_id=r.id AND c4.category IN ('Juice Bars & Smoothies')", "add_to_query"]
 		}
 
 	},
