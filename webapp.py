@@ -168,15 +168,21 @@ def talk_to_ronnie(message):
 
 		# print "last state: ", bot.last_state
 		bot.last_state = next_state
-		next_state, question = bot.traverse_questions(next_state, answer)
-		# print bot.last_state
-		print "query: ", bot.query
-		print "last state: ", bot.last_state
-		print "next state: ", next_state
-		print "next question: ", question
-		
-		emit('message to display', {'message': question, 'user': 'Ronnie', 'room': message['room']}, room=message['room'])
-		# send_message(question, message['room'])
+		s, q = bot.traverse_questions(next_state, answer)
+		print "next state and question: ", s, q
+		if s == None and q == None:
+			emit('message to display', {'message': "That's cool!", 'user': 'Ronnie', 'room': message['room']}, room=message['room'])
+		else:		
+			next_state = s
+			question = q
+			# print bot.last_state
+			print "query: ", bot.query
+			print "last state: ", bot.last_state
+			print "next state: ", next_state
+			print "next question: ", question
+			
+			emit('message to display', {'message': question, 'user': 'Ronnie', 'room': message['room']}, room=message['room'])
+			# send_message(question, message['room'])
 
 
 @socketio.on('receive command', namespace='/chat')

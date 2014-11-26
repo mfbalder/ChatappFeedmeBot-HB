@@ -225,6 +225,10 @@ def traverse_questions(last_state, user_answer):
 							choices = fifteen(query)
 							return 20, "Here are your category choices. Pick one: " + choices
 
+						return next_state, locals()['bot_question']
+						
+		return None, None
+
 						# if next_state == 20:
 
 
