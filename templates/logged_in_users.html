@@ -2,7 +2,11 @@
 		{% if users %}
 			<ul>
 			{% for user in users %}
+				{% if user == 'AskRonnie' %}
+				<li><div class='logo' id='ronnielogo'></div><a class="user_link" id="{{ user }}" href="#">{{ user }}</a></li>
+				{% else %}
 				<li><div class='logo'></div><a class="user_link" id="{{ user }}" href="#">{{ user }}</a></li>
+				{% endif %}
 			{% endfor %}
 			</ul>
 		{% endif %}

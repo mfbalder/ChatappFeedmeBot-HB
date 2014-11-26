@@ -61,7 +61,7 @@ d = {
 		'branches': {
 			('tennis ball', 'ball'): [15, " AND EXISTS(SELECT 1 FROM categories as c3 WHERE c3.business_id=r.id AND c3.category IN ('Donuts', 'Desserts', 'Bakeries', 'Cafes', 'Cupcakes', 'Pretzels', 'Patisserie/Cake Shop'))", "add_to_query"],
 			('peanut',): [15, " AND EXISTS(SELECT 1 FROM categories as c3 WHERE c3.business_id=r.id AND c3.category IN ('Ice Cream & Frozen Yogurt', 'Gelato', 'Shaved Ice'))", "add_to_query"],
-			('trick question',): [15, " AND EXISTS(SELECT 1 FROM categories as c3 WHERE c3.business_id=r.id AND c3.category = 'Candy Stores')", "add_to_query"]
+			('trick question', 'liar'): [15, " AND EXISTS(SELECT 1 FROM categories as c3 WHERE c3.business_id=r.id AND c3.category = 'Candy Stores')", "add_to_query"]
 		}
 	},
 	7: {
