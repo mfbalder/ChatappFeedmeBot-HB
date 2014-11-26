@@ -171,7 +171,7 @@ def talk_to_ronnie(message):
 		# print "last state: ", bot.last_state
 		answer = answer.lower()
 		bot.last_state = next_state
-		s, q = bot.traverse_questions(session['ronnie_nextstate'], answer)
+		s, q = bot.traverse_questions(next_state, answer)
 		print "next state and question: ", s, q
 		if s == None and q == None:
 			emit('message to display', {'message': "That's cool!", 'user': 'Ronnie', 'room': message['room']}, room=message['room'])
