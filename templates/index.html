@@ -148,6 +148,9 @@
 
 	    socket.on('app message display', function(response){
 	    	var chat_room = response.room;
+	    	// if(chat_room.indexOf("AskRonnie" != -1)){
+	    	// 	user_label = "Ronnie";
+	    	
 	    	$("#" + chat_room + " div.log").append('<p>' + response.message + '</p>');
 	    	$(".log").scrollTop($(".log")[0].scrollHeight);
 	    	$("#" + chat_room + " .send_message").addClass("encrypted");

@@ -130,7 +130,7 @@ d = {
 		}
 	}, 
 	15: {
-		'return': 'prequery',
+		'return': 'prequery question',
 		'bot_statement': "Here are your category choices. Pick one: ",
 		'next_step': [20, " AND EXISTS(SELECT 1 FROM categories as c6 WHERE c6.business_id=r.id AND c6.category = '?') AND EXISTS(SELECT 1 from categorylookup as l WHERE l.category=c.category)", "add_to_query"]
 	},
@@ -139,11 +139,28 @@ d = {
 	},
 	17: {
 
+	},
+	20: {
+		'return': 'query',
+		'bot_statement': "I give you... ?!",
 	}
 
 }
 
 
+def fifteen(query):
+	cat_choices = query.replace('r.name', 'c.category') + " AND r.stars>=4 GROUP BY c.category"
+	print cat_choices
+	cursor.execute(cat_choices)
+	results = cursor.fetchall()
+	try:
+		result_choices = random.sample(results, 5)
+	except ValueError:
+		result_choices = results
+	clean_choices = [x[0]for x in result_choices]
+	print clean_choices
+	str_result_choices = ", ".join(clean_choices)
+	return str_result_choices
 
 
 def traverse_questions(last_state, user_answer):
@@ -181,6 +198,7 @@ def traverse_questions(last_state, user_answer):
 				for each in branch:
 					if each in user_answer:
 						# print each
+						
 						next_state = d[locals()['last_state']]['branches'][locals()['branch']][0]
 						bot_question = d[locals()['next_state']]['bot_statement']
 						# print "next state: ", next_state
@@ -201,32 +219,54 @@ def traverse_questions(last_state, user_answer):
 								print "all: ", results
 							else:
 								print "it's empty"
+
+						
+						if next_state == 15:
+							choices = fifteen(query)
+							return 20, "Here are your category choices. Pick one: " + choices
+
+						# if next_state == 20:
+
+
 		# return next_state, 
 
+	# print "next state before the prequery: ", next_state
+	# if d[locals()['last_state']]['return'] == 'prequery question':
+	# 	print "I'm getting here!"
+	# 	cat_choices = query.replace('r.name', 'c.category') + " AND r.stars>=4 GROUP BY c.category"
+	# 	print cat_choices
+	# 	bot_question = d[locals()['last_state']]['bot_statement']
+	# 	# print bot_question
+	# 	cursor.execute(cat_choices)
+	# 	results = cursor.fetchall()
+	# 	result_choices = random.sample(results, 5)
+	# 	clean_choices = [x[0]for x in result_choices]
+	# 	print clean_choices
+	# 	str_result_choices = ", ".join(clean_choices)
+		
+	# 	print str_result_choices
+	# 	# for item in result_choices:
+	# 	# 	print item[0]
+	# 	# return d[locals()['last_state']]['next_step'][0], locals()['bot_question'] + result_choices
+	# 	return 20, "Here are your category choices. Pick one: " + str_result_choices
+	# 	# answer = raw_input()
 
-	if d[locals()['last_state']]['return'] == 'prequery':
-		cat_choices = query.replace('r.name', 'c.category') + " AND r.stars>=4 GROUP BY c.category"
-		print cat_choices
-		bot_question = d[locals()['last_state']]['bot_statement']
-		# print bot_question
-		cursor.execute(cat_choices)
-		results = cursor.fetchall()
-		result_choices = ", ".join(random.sample(results, 5))
-		print result_choices
-		# for item in result_choices:
-		# 	print item[0]
-		return d[locals()['last_state']]['next_step'][0], locals()['bot_question'] + result_choices
+	# 	# next_state = d[locals()['last_state']]['next_step'][0]
+	# 	# query_addition = d[locals()['last_state']]['next_step'][1].replace('?', answer)
+	# 	# cursor.execute(query + query_addition + " ORDER BY r.stars LIMIT 1")
+	# 	# a = cursor.fetchone()
+	# 	# print "I give you...", a[0]
 
-		# answer = raw_input()
-
-		# next_state = d[locals()['last_state']]['next_step'][0]
-		# query_addition = d[locals()['last_state']]['next_step'][1].replace('?', answer)
-		# cursor.execute(query + query_addition + " ORDER BY r.stars LIMIT 1")
-		# a = cursor.fetchone()
-		# print "I give you...", a[0]
+	if d[locals()['last_state']]['return'] == 'query':
+		final_search = " AND EXISTS(SELECT 1 FROM categories as c6 WHERE c6.business_id=r.id AND c6.category = '?') AND EXISTS(SELECT 1 from categorylookup as l WHERE l.category=c.category)".replace('?', user_answer)
+		query = query + final_search
+		cursor.execute(query)
+		result = cursor.fetchone()
+		print result
+		return None, "I give you..." + result[0] + "!"
 
 
-	print "next state", next_state				
+	# print "next state", next_state				
 	return next_state, locals()['bot_question']
 
 

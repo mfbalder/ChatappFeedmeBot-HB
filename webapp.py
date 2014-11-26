@@ -140,27 +140,43 @@ def test_message(message):
 @socketio.on('talk to ronnie', namespace='/chat')
 def talk_to_ronnie(message):
 	global next_state
-	print bot.last_state
+	# print bot.last_state
 	answer = message['message']#.lower()
 	if "hi" in answer or "hello" in answer and "ronnie" in answer:
 		next_state, question = bot.traverse_questions(0, None)
+		# print "query: ", bot.query
 		bot.last_state = 0
-		send_message("Well hello there friend!\n" + question, message['room'])
+		print "query: ", bot.query
+		print "last state: ", bot.last_state
+		print "next state: ", 1
+		emit('message to display', {'message': "Well hello there friend!\n" + question, 'user': 'Ronnie', 'room': message['room']}, room=message['room'])
+		# send_message("Well hello there friend!\n" + question, message['room'])
 	elif next_state == 1:
 		bot.last_state = 1
 		next_state, question = bot.traverse_questions(1, answer)
-		print "next state: ", next_state
-		print "question: ", question
-		print bot.query
-		send_message(question, message['room'])
-	else:
+		print "query: ", bot.query
 		print "last state: ", bot.last_state
+		print "next state: ", next_state
+		print "next question: ", question
+		# print bot.query
+		emit('message to display', {'message': question, 'user': 'Ronnie', 'room': message['room']}, room=message['room'])
+		# send_message(question, message['room'])
+	else:
+		# if next_state == 15:
+		# 	print "pick choices!"
+		# 	bot.traverse_questions(15, answer)
+
+		# print "last state: ", bot.last_state
 		bot.last_state = next_state
 		next_state, question = bot.traverse_questions(next_state, answer)
 		# print bot.last_state
-		print "next_state: ", next_state
-		print question
-		send_message(question, message['room'])
+		print "query: ", bot.query
+		print "last state: ", bot.last_state
+		print "next state: ", next_state
+		print "next question: ", question
+		
+		emit('message to display', {'message': question, 'user': 'Ronnie', 'room': message['room']}, room=message['room'])
+		# send_message(question, message['room'])
 
 
 @socketio.on('receive command', namespace='/chat')
