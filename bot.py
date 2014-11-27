@@ -6,11 +6,7 @@ from bot_path import path as d
 dbconn = psycopg2.connect('dbname=restaurantrec host=localhost port=5432')
 cursor = dbconn.cursor()
 
-# stopword_list = stopwords.words("english")
 
-city = None
-question_path = []
-query_filters = []
 last_state = None
 
 query = "SELECT r.name FROM restaurants AS r join categories AS c ON r.id=c.business_id join categorylookup AS l ON l.category=c.category"
@@ -41,10 +37,8 @@ def traverse_questions(state, user_answer):
 
 	   Returns the next state and that state's question"""
 
-	global question_path
+	# global question_path
 	global query
-	global join_half
-	global where_half
 	global cursor
 
 
@@ -68,9 +62,6 @@ def traverse_questions(state, user_answer):
 					# get the next state, and the question for that state
 					next_state = d[locals()['state']]['branches'][locals()['branch']][0]
 					bot_question = d[locals()['next_state']]['bot_statement']
-					# answer_branch = branch
-					# question_path.append((last_state, answer_branch))
-					# print question_path
 
 
 					query_action = d[locals()['state']]['branches'][locals()['branch']][2]
@@ -85,8 +76,9 @@ def traverse_questions(state, user_answer):
 						else:
 							print "it's empty"
 					elif query_action == 'end':
-						print "the end! give me a place!"
-						cursor.execute(query + " ORDER BY r.stars LIMIT 1")
+						print query
+						print query_addition
+						cursor.execute(query + query_addition + " ORDER BY r.stars LIMIT 1")
 						results = cursor.fetchone()
 						print results
 						return None, "I give you..." + results[0] + "!!"
@@ -100,37 +92,6 @@ def traverse_questions(state, user_answer):
 
 		return None, None
 
-						# if next_state == 20:
-
-
-		# return next_state, 
-
-	# print "next state before the prequery: ", next_state
-	# if d[locals()['last_state']]['return'] == 'prequery question':
-	# 	print "I'm getting here!"
-	# 	cat_choices = query.replace('r.name', 'c.category') + " AND r.stars>=4 GROUP BY c.category"
-	# 	print cat_choices
-	# 	bot_question = d[locals()['last_state']]['bot_statement']
-	# 	# print bot_question
-	# 	cursor.execute(cat_choices)
-	# 	results = cursor.fetchall()
-	# 	result_choices = random.sample(results, 5)
-	# 	clean_choices = [x[0]for x in result_choices]
-	# 	print clean_choices
-	# 	str_result_choices = ", ".join(clean_choices)
-		
-	# 	print str_result_choices
-	# 	# for item in result_choices:
-	# 	# 	print item[0]
-	# 	# return d[locals()['last_state']]['next_step'][0], locals()['bot_question'] + result_choices
-	# 	return 20, "Here are your category choices. Pick one: " + str_result_choices
-	# 	# answer = raw_input()
-
-	# 	# next_state = d[locals()['last_state']]['next_step'][0]
-	# 	# query_addition = d[locals()['last_state']]['next_step'][1].replace('?', answer)
-	# 	# cursor.execute(query + query_addition + " ORDER BY r.stars LIMIT 1")
-	# 	# a = cursor.fetchone()
-	# 	# print "I give you...", a[0]
 
 	if d[locals()['state']]['return'] == 'final_query':
 		if locals()['state'] == 20:

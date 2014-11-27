@@ -89,16 +89,16 @@ path = {
 			('intimate','quiet'): [12, " AND r.intimate=True", "add_to_query"],
 			('romantic', 'hot date'): [20, " AND r.romantic=True", "end"],
 			('chill', 'casual','yo'): [13, " AND (r.casual=True OR r.divey=True)", "add_to_query"],
-			('whiskey', 'mixology', 'artisanal', 'craft', 'tapestry'): [14, " AND (r.hipster=True OR EXISTS(SELECT 1 FROM categories as c5 WHERE c5.business_id=r.id AND c5.category = 'Cocktail Bars'))", "add_to_query"]
+			('whiskey', 'mixology', 'artisanal', 'craft', 'tapestry'): [20, " AND (r.hipster=True OR EXISTS(SELECT 1 FROM categories as c5 WHERE c5.business_id=r.id AND c5.category = 'Cocktail Bars'))", "end"]
 		}
 	},
 	11: {
 		'return': 'question',
 		'bot_statement': 'Do you have a preference for coffee or tea?\nTea, right? You know you like tea! (Tea.)',
 		'branches': {
-			('lovely cucumber sandwiches', 'high society'): [17, " AND EXISTS(SELECT 1 FROM categories AS c4 WHERE c4.business_id=r.id AND c4.category IN ('Tea Rooms')", "add_to_query"],
-			('nah', 'nope', 'no preference', "don't care", 'negative'): [17, None, None],
-			('caffeine free', 'juice', 'cleanse'): [17, " AND EXISTS(SELECT 1 FROM categories AS c4 WHERE c4.business_id=r.id AND c4.category IN ('Juice Bars & Smoothies')", "add_to_query"]
+			('lovely cucumber sandwiches', 'high society', 'darling'): [20, " AND EXISTS(SELECT 1 FROM categories AS c4 WHERE c4.business_id=r.id AND c4.category IN ('Tea Rooms')", "end"],
+			('nah', 'nope', 'no preference', "don't care", 'negative'): [20, '', "end"],
+			('caffeine free', 'juice', 'cleanse'): [20, " AND EXISTS(SELECT 1 FROM categories AS c4 WHERE c4.business_id=r.id AND c4.category IN ('Juice Bars & Smoothies'))", "end"]
 		}
 
 	},
@@ -122,6 +122,7 @@ path = {
 		'next_step': [20, " AND EXISTS(SELECT 1 FROM categories as c6 WHERE c6.business_id=r.id AND c6.category = '?') AND EXISTS(SELECT 1 from categorylookup as l WHERE l.category=c.category)", "add_to_query"]
 	},
 	17: {
+
 
 	},
 	20: {
