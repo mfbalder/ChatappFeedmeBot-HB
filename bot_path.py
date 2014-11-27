@@ -62,7 +62,7 @@ path = {
 		'return': 'question',
 		'bot_statement': 'What about dietary concerns? Gluten? Soy? Vegan? Etc.?',
 		'branches': {
-			('nope', 'no', 'nah', 'none', 'negative'): [9, None, "no_change"],
+			('nope', 'no', 'nah', 'none', 'negative'): [9, None, None],
 			('vegetarian',): [9, " AND (r.vegetarian=True OR EXISTS(SELECT 1 FROM categories AS c7 WHERE c7.business_id=r.id AND c7.category='Vegetarian'))", "add_to_query"],
 			('vegan',): [9, " AND r.vegan=True", "add_to_query"],
 			('gf', 'gluten', 'gluten-free'): [9, " AND (r.gluten_free=True OR EXISTS(SELECT 1 FROM categories as c5 WHERE c5.business_id=r.id AND c5.category='Gluten-Free'))", "add_to_query"],

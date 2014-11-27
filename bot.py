@@ -26,6 +26,29 @@ def fifteen(query):
 	str_result_choices = ", ".join(clean_choices)
 	return str_result_choices
 
+def get_next_state(current_state, answer):
+	for branch in d[locals()['current_state']]['branches']:
+		for each in branch:
+			# check to see which branch matches the user's input
+			if each in answer:
+				# get the next state, and the question for that state
+				next_state = d[locals()['current_state']]['branches'][locals()['branch']][0]
+				return next_state
+	return None
+
+def get_query_action_and_addition(current_state, answer):
+	for branch in d[locals()['current_state']]['branches']:
+		for each in branch:
+			# check to see which branch matches the user's input
+			if each in answer:
+				action = d[locals()['current_state']]['branches'][locals()['branch']][2]
+				addition = d[locals()['current_state']]['branches'][locals()['branch']][1]
+				return action, addition
+	return None, None
+
+def get_next_question(next_state):
+	return d[locals()['next_state']]['bot_statement']
+
 
 def traverse_questions(state, user_answer):
 	"""last state --> the state that a question was just asked from (int)
@@ -54,41 +77,68 @@ def traverse_questions(state, user_answer):
 		return next_state, d[2]['bot_statement']
 
 	if d[locals()['state']]['return'] == 'question':
+		next_state = get_next_state(state, user_answer)
+		bot_question = get_next_question(next_state)
 
-		for branch in d[locals()['state']]['branches']:
-			for each in branch:
-				# check to see which branch matches the user's input
-				if each in user_answer:
-					# get the next state, and the question for that state
-					next_state = d[locals()['state']]['branches'][locals()['branch']][0]
-					bot_question = d[locals()['next_state']]['bot_statement']
+		print next_state
+		print bot_question
+
+		query_action, query_addition = get_query_action_and_addition(state, user_answer)
+		print query_action, query_addition
+
+		if next_state == 15:
+			choices = fifteen(query)
+			return 20, "Here are your category choices. Pick one: " + choices
+
+		if next_state == None:
+			return None, None
+		if query_action == 'add_to_query':
+			cursor.execute(query + query_addition + " GROUP BY r.name")
+			results = cursor.fetchall()
+			if results:
+				query = query + query_addition
+		elif query_action == 'end':
+			cursor.execute(query + query_addition + " ORDER BY r.stars LIMIT 1")
+			result = cursor.fetchone()
+			return None, "I give you..." + result[0] + "!"
+
+		return next_state, bot_question
 
 
-					query_action = d[locals()['state']]['branches'][locals()['branch']][2]
-					query_addition = d[locals()['state']]['branches'][locals()['branch']][1]
+		# for branch in d[locals()['state']]['branches']:
+		# 	for each in branch:
+		# 		# check to see which branch matches the user's input
+		# 		if each in user_answer:
+		# 			# get the next state, and the question for that state
+		# 			next_state = d[locals()['state']]['branches'][locals()['branch']][0]
+		# 			bot_question = d[locals()['next_state']]['bot_statement']
 
-					if query_action == 'add_to_query':
-						cursor.execute(query + query_addition + " GROUP BY r.name")
-						results = cursor.fetchall()
-						if results != []:
-							query = query + query_addition
-							# print "all: ", results
-						else:
-							print "it's empty"
-					elif query_action == 'end':
-						print query
-						print query_addition
-						cursor.execute(query + query_addition + " ORDER BY r.stars LIMIT 1")
-						results = cursor.fetchone()
-						print results
-						return None, "I give you..." + results[0] + "!!"
-						last_state = None
-						query = "SELECT r.name FROM restaurants AS r join categories AS c ON r.id=c.business_id join categorylookup AS l ON l.category=c.category"
-					if next_state == 15:
-						choices = fifteen(query)
-						return 20, "Here are your category choices. Pick one: " + choices
 
-					return next_state, locals()['bot_question']
+		# 			query_action = d[locals()['state']]['branches'][locals()['branch']][2]
+		# 			query_addition = d[locals()['state']]['branches'][locals()['branch']][1]
+
+		# 			if query_action == 'add_to_query':
+		# 				cursor.execute(query + query_addition + " GROUP BY r.name")
+		# 				results = cursor.fetchall()
+		# 				if results != []:
+		# 					query = query + query_addition
+		# 					# print "all: ", results
+		# 				else:
+		# 					print "it's empty"
+		# 			elif query_action == 'end':
+		# 				print query
+		# 				print query_addition
+		# 				cursor.execute(query + query_addition + " ORDER BY r.stars LIMIT 1")
+		# 				results = cursor.fetchone()
+		# 				print results
+		# 				return None, "I give you..." + results[0] + "!!"
+		# 				last_state = None
+		# 				query = "SELECT r.name FROM restaurants AS r join categories AS c ON r.id=c.business_id join categorylookup AS l ON l.category=c.category"
+		# 			if next_state == 15:
+		# 				choices = fifteen(query)
+		# 				return 20, "Here are your category choices. Pick one: " + choices
+
+		# 			return next_state, locals()['bot_question']
 
 		return None, None
 
@@ -156,6 +206,8 @@ def project_logic():
 	
 
 def main():
+	print get_next_state(2, 'yes')
+	print get_next_question(2, 'yes')
 	start = raw_input().lower()
 	if "hi" in start or "hello" in start and "ronnie" in start:
 		print "Well hello there friend!"
