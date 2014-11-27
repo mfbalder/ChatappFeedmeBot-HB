@@ -87,8 +87,8 @@ path = {
 		'bot_statement': 'Righto, bar it is! What kind of vibe were we thinkin? Chill? Intimate? Romantic...? Ooo! Are you going on a date?? Tell me, tell me!',
 		'branches': {
 			('intimate','quiet'): [12, " AND r.intimate=True", "add_to_query"],
-			('romantic', 'hot date'): [16, " AND r.romantic=True", "add_to_query"],
-			('chill', 'casual','yo'): [13, " AND (r.casual=True OR r.divey=True", "add_to_query"],
+			('romantic', 'hot date'): [20, " AND r.romantic=True", "end"],
+			('chill', 'casual','yo'): [13, " AND (r.casual=True OR r.divey=True)", "add_to_query"],
 			('whiskey', 'mixology', 'artisanal', 'craft', 'tapestry'): [14, " AND (r.hipster=True OR EXISTS(SELECT 1 FROM categories as c5 WHERE c5.business_id=r.id AND c5.category = 'Cocktail Bars'))", "add_to_query"]
 		}
 	},
@@ -106,14 +106,14 @@ path = {
 		'return': 'question',
 		'bot_statement': "You just want wine, don't you?",
 		'branches': {
-			('yes sir', 'yup', "that's correct", 'shush'): [16, " AND EXISTS(SELECT 1 FROM categories AS c4 WHERE c4.business_id=r.id AND c4.category IN ('Wine Bars'))", "add_to_query"]
+			('yes sir', 'yup', "that's correct", 'shush'): [20, " AND EXISTS(SELECT 1 FROM categories AS c4 WHERE c4.business_id=r.id AND c4.category IN ('Wine Bars'))", "end"]
 		}
 	},
 	13: {
 		'return': 'question',
 		'bot_statement': 'Mirror mirror on the wall, tell me the one that just wants to watch sports and drink beers of them all...',
 		'branches': {
-			('hey now', 'fine'): [16, " AND EXISTS(SELECT 1 FROM categories as c4 WHERE c4.business_id=r.id AND c4.category IN ('Dive Bars', 'Sports Bars')", "add_to_query"]
+			('hey now', 'fine'): [20, " AND EXISTS(SELECT 1 FROM categories as c4 WHERE c4.business_id=r.id AND c4.category IN ('Dive Bars', 'Sports Bars')", "end"]
 		}
 	}, 
 	15: {
@@ -121,17 +121,16 @@ path = {
 		'bot_statement': "Here are your category choices. Pick one: ",
 		'next_step': [20, " AND EXISTS(SELECT 1 FROM categories as c6 WHERE c6.business_id=r.id AND c6.category = '?') AND EXISTS(SELECT 1 from categorylookup as l WHERE l.category=c.category)", "add_to_query"]
 	},
-	16: {
-		'return': 'query',
-		'bot_statement': "I give you...?!",
-
-	},
 	17: {
 
 	},
 	20: {
-		'return': 'query',
+		'return': 'final_query',
 		'bot_statement': "I give you... ?!",
 	}
 
 }
+
+
+
+####### All queries end when they look for things. 15 is a special breaking point where it asks users to choose a category that the bot has to generate

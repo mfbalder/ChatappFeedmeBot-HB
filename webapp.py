@@ -1,6 +1,7 @@
 from flask import Flask, render_template, session, request, redirect
 from flask.ext.socketio import SocketIO, emit, join_room, leave_room, send
 import bot
+import random
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
@@ -68,7 +69,7 @@ def logout():
 		print "I think you are ", session.get("user")
 
 		# reset Ronnie
-		bot.last_state = 0
+		# bot.last_state = 0
 
 		# reload the login page
 		print "This is the list of connected users after %s has logged out" % user
@@ -84,7 +85,6 @@ def set_session():
 	user = request.args.get("user")
 	print "set_session: user=", user
 	session["user"] = user
-	# session["ronnie_nextstate"] = None
 	print session
 
 	# add that user to the list of connected users
@@ -102,7 +102,7 @@ def refresh_connected_users():
 
 
 
-# socket functions
+# SOCKET FUNCTIONS
 
 def send_message(message, room):
 	emit('message to display', {'message': message, 'user': session['user'], 'room': room}, room=room)
@@ -112,8 +112,7 @@ def send_command(command, body, room, origin=None):
 
 
 
-# socket events
-
+# SOCKET EVENTS
 
 
 @socketio.on('refresh connected users', namespace='/chat')
@@ -129,21 +128,22 @@ def refresh_connecteduser_lists():
 def test_message(message):
 	"""Called when a message is submitted, sends message back to the client to be displayed"""
 	print message['data']
-	if message['room'] == 'AskRonniem':
-		print "It's Ronnie!"
-		answer = message['data'].lower()
-		if "hi" in answer or "hello" in answer and "ronnie" in answer:
-			send_message("Well hello there friend!", message['room'])
-
-	else:
-		send_message(message['data'], message['room'])
+	send_message(message['data'], message['room'])
 
 @socketio.on('talk to ronnie', namespace='/chat')
 def talk_to_ronnie(message):
+	"""
+		If a Ronnie chat window has been opened, messages are relayed through this function,
+			instead of through 'my event'
+
+		Uses the bot.py traverse_questions() function to determine what the next state should be, and
+			what question to ask based on the previous question, and how it was answered (message['message'])
+	"""
 	global next_state
-	print session
 
 	answer = message['message']
+	if "Thank" in answer:
+		emit('message to display', {'message': "You're welcome %s. Now give me a treat human!" % get_user(), 'user': 'Ronnie', 'room': message['room']}, room=message['room'])
 	if "hi " in answer or "hello" in answer and "ronnie" in answer:
 		next_state, question = bot.traverse_questions(0, None)
 		# print "query: ", bot.query
@@ -164,17 +164,16 @@ def talk_to_ronnie(message):
 		emit('message to display', {'message': question, 'user': 'Ronnie', 'room': message['room']}, room=message['room'])
 		# send_message(question, message['room'])
 	else:
-		# if next_state == 15:
-		# 	print "pick choices!"
-		# 	bot.traverse_questions(15, answer)
-
-		# print "last state: ", bot.last_state
 		answer = answer.lower()
-		bot.last_state = next_state
+		print "In the webapp else: the last state is %d and the answer for that is %s" % (bot.last_state, answer)
 		s, q = bot.traverse_questions(next_state, answer)
-		print "next state and question: ", s, q
+		bot.last_state = next_state
+
+		# if traverse_questions returns nothing (meaning the user hasn't answered the question),
+		# respond, but don't change the state yet
 		if s == None and q == None:
-			emit('message to display', {'message': "That's cool!", 'user': 'Ronnie', 'room': message['room']}, room=message['room'])
+			filler_chat = ["That's cool!", "Awesome.", "Totally.", "I know what you mean."]
+			emit('message to display', {'message': random.choice(filler_chat), 'user': 'Ronnie', 'room': message['room']}, room=message['room'])
 		else:		
 			next_state = s
 			question = q
@@ -186,7 +185,6 @@ def talk_to_ronnie(message):
 			
 			emit('message to display', {'message': question, 'user': 'Ronnie', 'room': message['room']}, room=message['room'])
 			# send_message(question, message['room'])
-
 
 @socketio.on('receive command', namespace='/chat')
 def receive_command(command):

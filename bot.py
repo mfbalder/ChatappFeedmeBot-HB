@@ -31,7 +31,7 @@ def fifteen(query):
 	return str_result_choices
 
 
-def traverse_questions(last_state, user_answer):
+def traverse_questions(state, user_answer):
 	"""last state --> the state that a question was just asked from (int)
 	   user_answer --> the user's answer to that question (str)
 
@@ -49,53 +49,54 @@ def traverse_questions(last_state, user_answer):
 
 
 
-	if last_state == 0:
+	if state == 0:
 		return 1, d[1]['bot_statement']
 
-	if last_state == 1:
+	if state == 1:
 		next_state = d[1]['branches']['answer'][0]
 		query_piece = d[1]['branches']['answer'][1].replace('?', user_answer)
 		query = query + query_piece
 		cursor.execute(query)
 		return next_state, d[2]['bot_statement']
 
-	if d[locals()['last_state']]['return'] == 'question':
-	# answer = user_answer.split()
+	if d[locals()['state']]['return'] == 'question':
 
-		for branch in d[locals()['last_state']]['branches']:
-				for each in branch:
-					if each in user_answer:
-						# print each
-						
-						next_state = d[locals()['last_state']]['branches'][locals()['branch']][0]
-						bot_question = d[locals()['next_state']]['bot_statement']
-						# print "next state: ", next_state
-						answer_branch = branch
-						question_path.append((last_state, answer_branch))
-						# print question_path
+		for branch in d[locals()['state']]['branches']:
+			for each in branch:
+				# check to see which branch matches the user's input
+				if each in user_answer:
+					# get the next state, and the question for that state
+					next_state = d[locals()['state']]['branches'][locals()['branch']][0]
+					bot_question = d[locals()['next_state']]['bot_statement']
+					# answer_branch = branch
+					# question_path.append((last_state, answer_branch))
+					# print question_path
 
 
-						query_action = d[locals()['last_state']]['branches'][locals()['branch']][2]
+					query_action = d[locals()['state']]['branches'][locals()['branch']][2]
+					query_addition = d[locals()['state']]['branches'][locals()['branch']][1]
 
-						query_addition = d[locals()['last_state']]['branches'][locals()['branch']][1]
+					if query_action == 'add_to_query':
+						cursor.execute(query + query_addition + " GROUP BY r.name")
+						results = cursor.fetchall()
+						if results != []:
+							query = query + query_addition
+							# print "all: ", results
+						else:
+							print "it's empty"
+					elif query_action == 'end':
+						print "the end! give me a place!"
+						cursor.execute(query + " ORDER BY r.stars LIMIT 1")
+						results = cursor.fetchone()
+						print results
+						return None, "I give you..." + results[0] + "!!"
+						last_state = None
+						query = "SELECT r.name FROM restaurants AS r join categories AS c ON r.id=c.business_id join categorylookup AS l ON l.category=c.category"
+					if next_state == 15:
+						choices = fifteen(query)
+						return 20, "Here are your category choices. Pick one: " + choices
 
-						if query_action == 'add_to_query':
-							cursor.execute(query + query_addition + " GROUP BY r.name")
-							results = cursor.fetchall()
-							if results != []:
-								query = query + query_addition
-								print "all: ", results
-							else:
-								print "it's empty"
-
-						
-						if next_state == 15:
-							choices = fifteen(query)
-							return 20, "Here are your category choices. Pick one: " + choices
-						elif next_state == 16:
-							return 20, 
-
-						return next_state, locals()['bot_question']
+					return next_state, locals()['bot_question']
 
 		return None, None
 
@@ -131,12 +132,12 @@ def traverse_questions(last_state, user_answer):
 	# 	# a = cursor.fetchone()
 	# 	# print "I give you...", a[0]
 
-	if d[locals()['last_state']]['return'] == 'query':
-		if locals()['last_state'] == 20:
+	if d[locals()['state']]['return'] == 'final_query':
+		if locals()['state'] == 20:
 			user_answer = ' '.join([word.capitalize() for word in user_answer.split()])
 			final_search = " AND EXISTS(SELECT 1 FROM categories as c6 WHERE c6.business_id=r.id AND c6.category = '?') AND EXISTS(SELECT 1 from categorylookup as l WHERE l.category=c.category)".replace('?', user_answer)
 			query = query + final_search
-		elif locals()['last_state'] == 16:
+		elif locals()['state'] == 16:
 			print "16!!!!!"
 		print "query time!!!", query
 		cursor.execute(query + " ORDER BY r.stars LIMIT 1")
