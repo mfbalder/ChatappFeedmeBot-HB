@@ -1,3 +1,20 @@
+################################
+#
+#	path = {
+#		state: {
+#				'return': indication of a 'question', or a 'prequery',
+#				'bot_statement': the question the bot is to ask at this state,
+#				'branches': {
+#						(some, potential, answers, that are checked for in the user's reply): [int to indicate the next state,
+#																							   the query to be added if this is the selected branch,
+#																							   what should be done next: add to the query, or finish the query],
+#						(each tuple indicates a potential next step) : []	
+#				}	
+#		}
+#	}
+#
+################################
+
 path = {
 	1: {
 		'return': 'question',

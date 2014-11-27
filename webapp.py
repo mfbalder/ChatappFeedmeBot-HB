@@ -8,9 +8,17 @@ app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
 app.secret_key = "ABC"
 
+
+################################
 # connected_users --> {username: ['room1 they're in', 'room2', 'room3']}
+
+# next_state --> Int (to track where Ronnie is in his path)
+################################
 connected_users = {'AskRonnie': []}
+
 next_state = None
+
+
 
 class UserUnAuth(Exception):
 	"""User isn't logged in."""
@@ -23,6 +31,10 @@ def get_user():
 	# 	return redirect("/login")
 
 	return session.get("user")
+
+################################
+		#Flask Routes
+################################
 
 @app.route('/')
 def index():
@@ -101,8 +113,9 @@ def refresh_connected_users():
 	return render_template("logged_in_users.html", user=user, users=[x for x in connected_users if x != user])
 
 
-
-# SOCKET FUNCTIONS
+################################
+		#SOCKET FUNCTIONS
+################################
 
 def send_message(message, room):
 	emit('message to display', {'message': message, 'user': session['user'], 'room': room}, room=room)
@@ -111,8 +124,9 @@ def send_command(command, body, room, origin=None):
 	emit('interpret command', {'command': command, 'body': body, 'origin': origin}, room=room)
 
 
-
-# SOCKET EVENTS
+################################
+		#SOCKET EVENTS
+################################
 
 
 @socketio.on('refresh connected users', namespace='/chat')
@@ -217,7 +231,12 @@ def open_chat(data):
 	emit('open chat box', {'template': render_template("chat_box.html", room=room, receiving_user=submitting_user), 'chat_room': room}, room=receiving_user)
 
 
-	
+
+
+
+####################################
+	#Socket Connection Functions
+####################################	
 
 @socketio.on('connect', namespace='/chat')
 def test_connect():

@@ -8,7 +8,6 @@ cursor = dbconn.cursor()
 
 
 last_state = None
-
 query = "SELECT r.name FROM restaurants AS r join categories AS c ON r.id=c.business_id join categorylookup AS l ON l.category=c.category"
 
 
