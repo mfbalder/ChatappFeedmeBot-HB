@@ -27,9 +27,13 @@ AskRonnie is built in Python with a Flask framework. It uses a PostgreSQL databa
 ### File Breakdown:
 
 ```webapp.py```: Handles the Flask application, in addition to the socket event handlers
+
 ```bot.py```: Manages the brains of the AskRonnie chatbot
+
 ```bot_path.py```: Contains the question path dictionary for AskRonnie
+
 ```Templates```: All html files extend from ```base.html``` using Jinja
+
 ```Static```: All image files
 
 
