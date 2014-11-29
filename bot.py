@@ -12,18 +12,16 @@ query = "SELECT r.name FROM restaurants AS r join categories AS c ON r.id=c.busi
 
 
 def fifteen(query):
-	print "QUery in fifteen!!!!!!: ", query
 	cat_choices = query.replace('r.name', 'c.category') + " AND r.stars>=4 GROUP BY c.category"
-	print cat_choices
 	cursor.execute(cat_choices)
 	results = cursor.fetchall()
 	try:
 		result_choices = random.sample(results, 5)
 	except ValueError:
 		result_choices = results
-	clean_choices = [x[0]for x in result_choices]
-	print clean_choices
-	str_result_choices = ", ".join(clean_choices)
+
+	choices = [x[0]for x in result_choices]
+	str_result_choices = ", ".join(choices)
 	return str_result_choices
 
 def get_next_state(current_state, answer):
@@ -44,6 +42,7 @@ def get_query_action_and_addition(current_state, answer):
 				action = d[locals()['current_state']]['branches'][locals()['branch']][2]
 				addition = d[locals()['current_state']]['branches'][locals()['branch']][1]
 				return action, addition
+	print "in get query, i didn't find anything!!"
 	return None, None
 
 def get_next_question(next_state):
@@ -93,13 +92,13 @@ def traverse_questions(state, user_answer):
 			return next_state, bot_question
 
 		query_action, query_addition = get_query_action_and_addition(state, user_answer)
-		print query_action, query_addition
+
 
 		if next_state == 15:
 			query = query + query_addition
 			choices = fifteen(query)
 			return 20, "Here are your category choices. Pick one: " + choices
-			
+
 		if query_action == 'add_to_query':
 			cursor.execute(query + query_addition + " GROUP BY r.name")
 			results = cursor.fetchall()
@@ -161,8 +160,6 @@ def project_logic():
 	
 
 def main():
-	print get_next_state(2, 'yes')
-	print get_next_question(2, 'yes')
 	start = raw_input().lower()
 	if "hi" in start or "hello" in start and "ronnie" in start:
 		print "Well hello there friend!"

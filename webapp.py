@@ -17,6 +17,7 @@ app.secret_key = "ABC"
 connected_users = {'AskRonnie': []}
 ronniechat = False
 next_state = None
+last_state = None
 
 
 
@@ -144,8 +145,11 @@ def new_message(message):
 	print message['data']
 	send_message(message['data'], message['room'])
 
-def no_ronnie_chat_yet():
-	pass
+
+def no_ronnie_chat_yet(message):
+	filler_chat = ["Hi I'm Ronnie! I have just met you and I looooove you. Will you be my master?",
+					   "Here comes the Ronnie, strong and brave - woof!"]
+	emit('message to display', {'message': random.choice(filler_chat), 'user': 'Ronnie', 'room': message['room']}, room=message['room'])
 
 @socketio.on('talk to ronnie', namespace='/chat')
 def talk_to_ronnie(message):
@@ -161,53 +165,68 @@ def talk_to_ronnie(message):
 
 	answer = message['message']
 
-	# if ronniechat == False: 
-	# elif ronniechat == True:
+	if ronniechat == False: 
+		if "hi ronnie" in answer.lower() or "hello ronnie" in answer.lower():
+			ronniechat = True
+			next_state, question = bot.traverse_questions(0, None)
+			bot.last_state = 0
+			print "query: ", bot.query
+			print "last state: ", bot.last_state
+			print "next state: ", 1
+			emit('message to display', {'message': "Well hello there friend!\n" + question, 'user': 'Ronnie', 'room': message['room']}, room=message['room'])
+		else:
+			no_ronnie_chat_yet(message)
+		return
+			
+	if ronniechat == True:
+		if "thank" in answer.lower():
+			emit('message to display', {'message': "You're welcome %s. Now give me a treat human!" % get_user(), 'user': 'Ronnie', 'room': message['room']}, room=message['room'])
+			ronniechat = False
+			return 
 
-	if "Thank" in answer:
-		emit('message to display', {'message': "You're welcome %s. Now give me a treat human!" % get_user(), 'user': 'Ronnie', 'room': message['room']}, room=message['room'])
-	if "hi " in answer or "hello" in answer and "ronnie" in answer:
-		next_state, question = bot.traverse_questions(0, None)
-		# print "query: ", bot.query
-		bot.last_state = 0
-		print "query: ", bot.query
-		print "last state: ", bot.last_state
-		print "next state: ", 1
-		emit('message to display', {'message': "Well hello there friend!\n" + question, 'user': 'Ronnie', 'room': message['room']}, room=message['room'])
-		# send_message("Well hello there friend!\n" + question, message['room'])
-	elif next_state == 1:
-		bot.last_state = 1
-		next_state, question = bot.traverse_questions(1, answer)
-		print "query: ", bot.query
-		print "last state: ", bot.last_state
-		print "next state: ", next_state
-		print "next question: ", question
-		# print bot.query
-		emit('message to display', {'message': question, 'user': 'Ronnie', 'room': message['room']}, room=message['room'])
-		# send_message(question, message['room'])
-	else:
-		answer = answer.lower()
-		print "In the webapp else: the last state is %d and the answer for that is %s" % (bot.last_state, answer)
-		s, q = bot.traverse_questions(next_state, answer)
-		bot.last_state = next_state
 
-		# if traverse_questions returns nothing (meaning the user hasn't answered the question),
-		# respond, but don't change the state yet
-		if s == None and q == None:
-			filler_chat = ["That's cool!", "Awesome.", "Totally.", "I know what you mean."]
-			emit('message to display', {'message': random.choice(filler_chat), 'user': 'Ronnie', 'room': message['room']}, room=message['room'])
-		else:		
-			next_state = s
-			question = q
-			# print bot.last_state
+		# if "hi " in answer or "hello" in answer and "ronnie" in answer:
+		# 	next_state, question = bot.traverse_questions(0, None)
+		# 	# print "query: ", bot.query
+		# 	bot.last_state = 0
+		# 	print "query: ", bot.query
+		# 	print "last state: ", bot.last_state
+		# 	print "next state: ", 1
+		# 	emit('message to display', {'message': "Well hello there friend!\n" + question, 'user': 'Ronnie', 'room': message['room']}, room=message['room'])
+			# send_message("Well hello there friend!\n" + question, message['room'])
+		elif next_state == 1:
+			bot.last_state = 1
+			next_state, question = bot.traverse_questions(1, answer)
 			print "query: ", bot.query
 			print "last state: ", bot.last_state
 			print "next state: ", next_state
 			print "next question: ", question
-			
+			# print bot.query
 			emit('message to display', {'message': question, 'user': 'Ronnie', 'room': message['room']}, room=message['room'])
 			# send_message(question, message['room'])
+		else:
+			answer = answer.lower()
+			print "In the webapp else: the last state is %d and the answer for that is %s" % (bot.last_state, answer)
+			s, q = bot.traverse_questions(next_state, answer)
+			bot.last_state = next_state
 
+			# if traverse_questions returns nothing (meaning the user hasn't answered the question),
+			# respond, but don't change the state yet
+			if s == None and q == None:
+				filler_chat = ["That's cool!", "Awesome.", "Totally.", "I know what you mean."]
+				emit('message to display', {'message': random.choice(filler_chat), 'user': 'Ronnie', 'room': message['room']}, room=message['room'])
+			else:		
+				next_state = s
+				question = q
+				# print bot.last_state
+				print "query: ", bot.query
+				print "last state: ", bot.last_state
+				print "next state: ", next_state
+				print "next question: ", question
+				
+				emit('message to display', {'message': question, 'user': 'Ronnie', 'room': message['room']}, room=message['room'])
+				# send_message(question, message['room'])
+		return
 @socketio.on('receive command', namespace='/chat')
 def receive_command(command):
 	"""Sends any commands (join, update list, etc.) to a user's room to be interpreted"""
