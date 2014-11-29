@@ -15,7 +15,7 @@ app.secret_key = "ABC"
 # next_state --> Int (to track where Ronnie is in his path)
 ################################
 connected_users = {'AskRonnie': []}
-
+ronniechat = False
 next_state = None
 
 
@@ -138,24 +138,32 @@ def refresh_connecteduser_lists():
 		for key in connected_users:
 			send_command('UL', "None", key)
 
-@socketio.on('my event', namespace='/chat')
-def test_message(message):
+@socketio.on('message event', namespace='/chat')
+def new_message(message):
 	"""Called when a message is submitted, sends message back to the client to be displayed"""
 	print message['data']
 	send_message(message['data'], message['room'])
+
+def no_ronnie_chat_yet():
+	pass
 
 @socketio.on('talk to ronnie', namespace='/chat')
 def talk_to_ronnie(message):
 	"""
 		If a Ronnie chat window has been opened, messages are relayed through this function,
-			instead of through 'my event'
+			instead of through 'message event'
 
 		Uses the bot.py traverse_questions() function to determine what the next state should be, and
 			what question to ask based on the previous question, and how it was answered (message['message'])
 	"""
 	global next_state
+	global ronniechat
 
 	answer = message['message']
+
+	# if ronniechat == False: 
+	# elif ronniechat == True:
+
 	if "Thank" in answer:
 		emit('message to display', {'message': "You're welcome %s. Now give me a treat human!" % get_user(), 'user': 'Ronnie', 'room': message['room']}, room=message['room'])
 	if "hi " in answer or "hello" in answer and "ronnie" in answer:

@@ -12,6 +12,7 @@ query = "SELECT r.name FROM restaurants AS r join categories AS c ON r.id=c.busi
 
 
 def fifteen(query):
+	print "QUery in fifteen!!!!!!: ", query
 	cat_choices = query.replace('r.name', 'c.category') + " AND r.stars>=4 GROUP BY c.category"
 	print cat_choices
 	cursor.execute(cat_choices)
@@ -46,7 +47,10 @@ def get_query_action_and_addition(current_state, answer):
 	return None, None
 
 def get_next_question(next_state):
-	return d[locals()['next_state']]['bot_statement']
+	try:
+		return d[locals()['next_state']]['bot_statement']
+	except KeyError:
+		return None
 
 
 def traverse_questions(state, user_answer):
@@ -64,33 +68,38 @@ def traverse_questions(state, user_answer):
 	global cursor
 
 
-
 	if state == 0:
 		return 1, d[1]['bot_statement']
+	if state == 20:
+		user_answer = ' '.join([word.capitalize() for word in user_answer.split()])
+		final_search = " AND EXISTS(SELECT 1 FROM categories as c6 WHERE c6.business_id=r.id AND c6.category = '?') AND EXISTS(SELECT 1 from categorylookup as l where l.category=c.category)".replace('?', user_answer)
+		query = query + final_search
+		cursor.execute(query + " ORDER BY r.stars LIMIT 1")
+		result = cursor.fetchone()
+		print result
+		return None, "I give you..." + result[0] + "!"
 
-	if state == 1:
-		next_state = d[1]['branches']['answer'][0]
-		query_piece = d[1]['branches']['answer'][1].replace('?', user_answer)
-		query = query + query_piece
-		cursor.execute(query)
-		return next_state, d[2]['bot_statement']
 
 	if d[locals()['state']]['return'] == 'question':
 		next_state = get_next_state(state, user_answer)
+		if next_state == None:
+			return None, None
+
 		bot_question = get_next_question(next_state)
 
-		print next_state
-		print bot_question
+		if state == 1:
+			query_addition = d[1]['branches']['answer'][1].replace('?', user_answer)
+			query = query + query_addition
+			return next_state, bot_question
 
 		query_action, query_addition = get_query_action_and_addition(state, user_answer)
 		print query_action, query_addition
 
 		if next_state == 15:
+			query = query + query_addition
 			choices = fifteen(query)
 			return 20, "Here are your category choices. Pick one: " + choices
-
-		if next_state == None:
-			return None, None
+			
 		if query_action == 'add_to_query':
 			cursor.execute(query + query_addition + " GROUP BY r.name")
 			results = cursor.fetchall()
@@ -104,60 +113,7 @@ def traverse_questions(state, user_answer):
 		return next_state, bot_question
 
 
-		# for branch in d[locals()['state']]['branches']:
-		# 	for each in branch:
-		# 		# check to see which branch matches the user's input
-		# 		if each in user_answer:
-		# 			# get the next state, and the question for that state
-		# 			next_state = d[locals()['state']]['branches'][locals()['branch']][0]
-		# 			bot_question = d[locals()['next_state']]['bot_statement']
 
-
-		# 			query_action = d[locals()['state']]['branches'][locals()['branch']][2]
-		# 			query_addition = d[locals()['state']]['branches'][locals()['branch']][1]
-
-		# 			if query_action == 'add_to_query':
-		# 				cursor.execute(query + query_addition + " GROUP BY r.name")
-		# 				results = cursor.fetchall()
-		# 				if results != []:
-		# 					query = query + query_addition
-		# 					# print "all: ", results
-		# 				else:
-		# 					print "it's empty"
-		# 			elif query_action == 'end':
-		# 				print query
-		# 				print query_addition
-		# 				cursor.execute(query + query_addition + " ORDER BY r.stars LIMIT 1")
-		# 				results = cursor.fetchone()
-		# 				print results
-		# 				return None, "I give you..." + results[0] + "!!"
-		# 				last_state = None
-		# 				query = "SELECT r.name FROM restaurants AS r join categories AS c ON r.id=c.business_id join categorylookup AS l ON l.category=c.category"
-		# 			if next_state == 15:
-		# 				choices = fifteen(query)
-		# 				return 20, "Here are your category choices. Pick one: " + choices
-
-		# 			return next_state, locals()['bot_question']
-
-		return None, None
-
-
-	if d[locals()['state']]['return'] == 'final_query':
-		if locals()['state'] == 20:
-			user_answer = ' '.join([word.capitalize() for word in user_answer.split()])
-			final_search = " AND EXISTS(SELECT 1 FROM categories as c6 WHERE c6.business_id=r.id AND c6.category = '?') AND EXISTS(SELECT 1 from categorylookup as l WHERE l.category=c.category)".replace('?', user_answer)
-			query = query + final_search
-		elif locals()['state'] == 16:
-			print "16!!!!!"
-		print "query time!!!", query
-		cursor.execute(query + " ORDER BY r.stars LIMIT 1")
-		result = cursor.fetchone()
-		print result
-		return None, "I give you..." + result[0] + "!"
-
-
-	# print "next state", next_state				
-	return next_state, locals()['bot_question']
 
 
 def project_logic():

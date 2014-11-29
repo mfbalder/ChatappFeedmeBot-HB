@@ -123,7 +123,7 @@ path = {
 		'return': 'question',
 		'bot_statement': "You just want wine, don't you?",
 		'branches': {
-			('yes sir', 'yup', "that's correct", 'shush'): [20, " AND EXISTS(SELECT 1 FROM categories AS c4 WHERE c4.business_id=r.id AND c4.category IN ('Wine Bars'))", "end"]
+			('yes sir', 'yup', "that's correct", 'shush', 'ya'): [20, " AND EXISTS(SELECT 1 FROM categories AS c4 WHERE c4.business_id=r.id AND c4.category IN ('Wine Bars'))", "end"]
 		}
 	},
 	13: {
@@ -134,17 +134,13 @@ path = {
 		}
 	}, 
 	15: {
-		'return': 'prequery question',
-		'bot_statement': "Here are your category choices. Pick one: ",
-		'next_step': [20, " AND EXISTS(SELECT 1 FROM categories as c6 WHERE c6.business_id=r.id AND c6.category = '?') AND EXISTS(SELECT 1 from categorylookup as l WHERE l.category=c.category)", "add_to_query"]
+
 	},
 	17: {
 
-
 	},
 	20: {
-		'return': 'final_query',
-		'bot_statement': "I give you... ?!",
+
 	}
 
 }
