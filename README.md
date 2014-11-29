@@ -26,21 +26,16 @@ AskRonnie is built in Python with a Flask framework. It uses a PostgreSQL databa
 
 ### File Breakdown:
 
-webapp
+```webapp.py```: Handles the Flask application, in addition to the socket event handlers
+```bot.py```: Manages the brains of the AskRonnie chatbot
+```bot_path.py```: Contains the question path dictionary for AskRonnie
+```Templates```: All html files extend from ```base.html``` using Jinja
+```Static```: All image files
+
 
 
 
 ![picture](https://github.com/mfbalder/ChatappFeedmeBot-HB/blob/master/static/Screen\ Shot\ 2014-11-28\ at\ 4.09.21\ PM.png) 
 
-### Why websockets? Why a chat bot?
 
-For my original project, the goal was to get a better understanding of how instant messenging and chat applications work, particularly in the context of websockets, which use a handshake to create the opportunity for continuous, bi-directional communication without having to constantly make new HTTP requests. This allows for rapid, delay-free communication between users, and is perfect for a chat situation. 
 
-Technologies Researched/Used:
-* C-based Languages (Python)
-* Web Frameworks (Flask)
-* Websockets (Flask-SocketIO)
-* JQuery
-* Encryption (JSEncrypt)
-* HTML/CSS
-* Jinja
