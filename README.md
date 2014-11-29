@@ -30,7 +30,7 @@ webapp
 
 
 
-![picture](https://github.com/mfbalder/ChatappFeedmeBot-HB/blob/master/static/Screen\ Shot\ 2014-11-28\ at\ 4.09.21\ PM.png 
+![picture](https://github.com/mfbalder/ChatappFeedmeBot-HB/blob/master/static/Screen\ Shot\ 2014-11-28\ at\ 4.09.21\ PM.png) 
 
 ### Why websockets? Why a chat bot?
 
