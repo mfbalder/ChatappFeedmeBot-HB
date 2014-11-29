@@ -148,7 +148,8 @@ def new_message(message):
 
 def no_ronnie_chat_yet(message):
 	filler_chat = ["Hi I'm Ronnie! I have just met you and I looooove you. Will you be my master?",
-					   "Here comes the Ronnie, strong and brave - woof!"]
+					"Here comes the Ronnie, strong and brave - woof!",
+					"You know, if you bothered to say hi to me I might just be more helpful. Or...you could scratch my belly!"]
 	emit('message to display', {'message': random.choice(filler_chat), 'user': 'Ronnie', 'room': message['room']}, room=message['room'])
 
 @socketio.on('talk to ronnie', namespace='/chat')
@@ -182,6 +183,9 @@ def talk_to_ronnie(message):
 		if "thank" in answer.lower():
 			emit('message to display', {'message': "You're welcome %s. Now give me a treat human!" % get_user(), 'user': 'Ronnie', 'room': message['room']}, room=message['room'])
 			ronniechat = False
+			bot.query = "SELECT r.name FROM restaurants AS r join categories AS c ON r.id=c.business_id join categorylookup AS l ON l.category=c.category"
+			bot.last_state = None
+			next_state = None
 			return 
 
 
