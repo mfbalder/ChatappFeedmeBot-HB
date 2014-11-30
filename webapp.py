@@ -2,6 +2,7 @@ from flask import Flask, render_template, session, request, redirect
 from flask.ext.socketio import SocketIO, emit, join_room, leave_room, send
 import bot
 import random
+import time
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
@@ -18,6 +19,7 @@ connected_users = {'AskRonnie': []}
 ronniechat = False
 next_state = None
 last_state = None
+city = None
 
 
 
@@ -145,6 +147,15 @@ def new_message(message):
 	print message['data']
 	send_message(message['data'], message['room'])
 
+def ronnie_thinking(message):
+	thinking_messages = ["sniffing his butt", "eating grass", "eating garbage", "chasing an ant",
+						 "being chased by a poodle", "rolling in the mud"]
+	status_message = "Ronnie's currently %s, please stand by." % random.choice(thinking_messages)
+	emit('message to display', {'message': status_message, 'user': 'Ronnie', 'room': message['room']}, room=message['room'])
+
+
+def delay():
+	time.sleep(10)
 
 def no_ronnie_chat_yet(message):
 	filler_chat = ["Hi I'm Ronnie! I have just met you and I looooove you. Will you be my master?",
@@ -163,11 +174,17 @@ def talk_to_ronnie(message):
 	"""
 	global next_state
 	global ronniechat
+	global city
 
 	answer = message['message']
 
+	if "tell me about" in answer.lower():
+		location = bot.tell_me_more(answer, city)
+		emit('message to display', {'message': "It's at " + location + ". Would you like me to text you the address?", 'user': 'Ronnie', 'room': message['room']}, room=message['room'])
+		return
+
 	if ronniechat == False: 
-		if "hi ronnie" in answer.lower() or "hello ronnie" in answer.lower():
+		if "hi ronnie" in answer.lower() or "hello ronnie" in answer.lower() or 'howdy' in answer.lower():
 			ronniechat = True
 			next_state, question = bot.traverse_questions(0, None)
 			bot.last_state = 0
@@ -189,25 +206,18 @@ def talk_to_ronnie(message):
 			return 
 
 
-		# if "hi " in answer or "hello" in answer and "ronnie" in answer:
-		# 	next_state, question = bot.traverse_questions(0, None)
-		# 	# print "query: ", bot.query
-		# 	bot.last_state = 0
-		# 	print "query: ", bot.query
-		# 	print "last state: ", bot.last_state
-		# 	print "next state: ", 1
-		# 	emit('message to display', {'message': "Well hello there friend!\n" + question, 'user': 'Ronnie', 'room': message['room']}, room=message['room'])
-			# send_message("Well hello there friend!\n" + question, message['room'])
 		elif next_state == 1:
 			bot.last_state = 1
 			next_state, question = bot.traverse_questions(1, answer)
+			city = answer
+
 			print "query: ", bot.query
 			print "last state: ", bot.last_state
 			print "next state: ", next_state
 			print "next question: ", question
-			# print bot.query
+
 			emit('message to display', {'message': question, 'user': 'Ronnie', 'room': message['room']}, room=message['room'])
-			# send_message(question, message['room'])
+		
 		else:
 			answer = answer.lower()
 			print "In the webapp else: the last state is %d and the answer for that is %s" % (bot.last_state, answer)
@@ -219,7 +229,7 @@ def talk_to_ronnie(message):
 			if s == None and q == None:
 				filler_chat = ["That's cool!", "Awesome.", "Totally.", "I know what you mean."]
 				emit('message to display', {'message': random.choice(filler_chat), 'user': 'Ronnie', 'room': message['room']}, room=message['room'])
-			else:		
+			else:	
 				next_state = s
 				question = q
 				# print bot.last_state
@@ -228,9 +238,13 @@ def talk_to_ronnie(message):
 				print "next state: ", next_state
 				print "next question: ", question
 				
+				chance = random.random()
+				if chance > 0.7:
+					ronnie_thinking(message)
 				emit('message to display', {'message': question, 'user': 'Ronnie', 'room': message['room']}, room=message['room'])
 				# send_message(question, message['room'])
 		return
+
 @socketio.on('receive command', namespace='/chat')
 def receive_command(command):
 	"""Sends any commands (join, update list, etc.) to a user's room to be interpreted"""

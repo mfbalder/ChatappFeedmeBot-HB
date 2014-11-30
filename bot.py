@@ -10,6 +10,17 @@ cursor = dbconn.cursor()
 last_state = None
 query = "SELECT r.name FROM restaurants AS r join categories AS c ON r.id=c.business_id join categorylookup AS l ON l.category=c.category"
 
+def tell_me_more(answer, city):
+	# Tell me about ______
+	full_answer = answer.split()
+	user_answer = ' '.join(full_answer[3:])
+	print user_answer
+
+	q = "SELECT r.address FROM restaurants as r WHERE r.name = %s and r.city = %s"
+	print q
+	cursor.execute(q, (user_answer, city))
+	result = cursor.fetchone()
+	return result[0]
 
 def fifteen(query):
 	cat_choices = query.replace('r.name', 'c.category') + " AND r.stars>=4 GROUP BY c.category"
