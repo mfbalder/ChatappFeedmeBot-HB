@@ -169,6 +169,17 @@
 			socket.emit('refresh connected users');			
 		});
 
+		$(document).on('click', '.get_phone', function(event){
+			event.preventDefault();
+			alert("woohoo!");
+			num = prompt("Please enter your phone number", "(xxx)xxx-xxxx")
+			var href = $(this).attr('href') + num;
+			console.log(href);
+			$.get(href);
+			
+			// $(this).attr('href', href);
+		});
+
 		
 
 

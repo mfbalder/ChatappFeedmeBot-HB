@@ -18,9 +18,12 @@ def tell_me_more(answer, city):
 
 	q = "SELECT r.address FROM restaurants as r WHERE r.name = %s and r.city = %s"
 	print q
-	cursor.execute(q, (user_answer, city))
-	result = cursor.fetchone()
-	return result[0]
+	try:
+		cursor.execute(q, (user_answer, city))
+		result = cursor.fetchone()
+		return result[0], user_answer
+	except TypeError:
+		return "an unknown location. Are you sure you meant %s?" % user_answer, user_answer
 
 def fifteen(query):
 	cat_choices = query.replace('r.name', 'c.category') + " AND r.stars>=4 GROUP BY c.category"

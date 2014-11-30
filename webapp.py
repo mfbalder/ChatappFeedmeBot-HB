@@ -3,6 +3,7 @@ from flask.ext.socketio import SocketIO, emit, join_room, leave_room, send
 import bot
 import random
 import time
+from send_message import send_text_message
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
@@ -21,6 +22,21 @@ next_state = None
 last_state = None
 city = None
 
+# from twilio.rest import TwilioRestClient
+# import os
+
+# def send_text_message(message, phone_num):
+# 	ACCOUNT_SID = os.environ.get('TWILIO_ACCOUNT_SID')
+# 	AUTH_TOKEN = os.environ.get('TWILIO_AUTH_TOKEN')
+# 	TWILIO_NUMBER = os.environ.get('TWILIO_NUMBER')
+
+# 	client = TwilioRestClient(ACCOUNT_SID, AUTH_TOKEN)
+
+# 	m = client.messages.create(
+# 		to=phone_num,
+# 		from_=TWILIO_NUMBER,
+# 		body=message,)
+# 	return m.sid
 
 
 class UserUnAuth(Exception):
@@ -115,6 +131,14 @@ def refresh_connected_users():
 	print "user in refresh_users", user
 	return render_template("logged_in_users.html", user=user, users=[x for x in connected_users if x != user])
 
+@app.route("/send_text")
+def send_text():
+	print "i'm here"
+	location = request.args.get("location")
+	phone_num = request.args.get("number")
+	print location, phone_num
+	return send_text_message(location, phone_num)
+
 
 ################################
 		#SOCKET FUNCTIONS
@@ -153,10 +177,6 @@ def ronnie_thinking(message):
 	status_message = "Ronnie's currently %s, please stand by." % random.choice(thinking_messages)
 	emit('message to display', {'message': status_message, 'user': 'Ronnie', 'room': message['room']}, room=message['room'])
 
-
-def delay():
-	time.sleep(10)
-
 def no_ronnie_chat_yet(message):
 	filler_chat = ["Hi I'm Ronnie! I have just met you and I looooove you. Will you be my master?",
 					"Here comes the Ronnie, strong and brave - woof!",
@@ -179,8 +199,9 @@ def talk_to_ronnie(message):
 	answer = message['message']
 
 	if "tell me about" in answer.lower():
-		location = bot.tell_me_more(answer, city)
-		emit('message to display', {'message': "It's at " + location + ". Would you like me to text you the address?", 'user': 'Ronnie', 'room': message['room']}, room=message['room'])
+		location,venue = bot.tell_me_more(answer, city)
+		print venue
+		emit('message to display', {'message': "It's at " + location + " <a class='get_phone' href='/send_text?location=%s&number='>Click to have the address texted to you</a>" % location, 'user': 'Ronnie', 'room': message['room']}, room=message['room'])
 		return
 
 	if ronniechat == False: 
