@@ -133,7 +133,6 @@ def refresh_connected_users():
 
 @app.route("/send_text")
 def send_text():
-	print "i'm here"
 	location = request.args.get("location")
 	phone_num = request.args.get("number")
 	print location, phone_num
