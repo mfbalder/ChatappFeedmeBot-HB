@@ -240,7 +240,8 @@ def talk_to_ronnie(message):
 		
 		else:
 			answer = answer.lower()
-			print "In the webapp else: the last state is %d and the answer for that is %s" % (bot.last_state, answer)
+			# print "In the webapp else: the last state is %d and the answer for that is %s" % (bot.last_state, answer)
+			# print "About to pass %d into the traverse_questions function with an answer of %s" % (next_state, answer) 
 			s, q = bot.traverse_questions(next_state, answer)
 			bot.last_state = next_state
 

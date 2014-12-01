@@ -84,8 +84,8 @@ path = {
 			('vegan',): [9, " AND r.vegan=True", "add_to_query"],
 			('gf', 'gluten', 'gluten-free'): [9, " AND (r.gluten_free=True OR EXISTS(SELECT 1 FROM categories as c5 WHERE c5.business_id=r.id AND c5.category='Gluten-Free'))", "add_to_query"],
 			('soy',): [9, " AND r.soy_free=True", "add_to_query"],
-			('halal',): [9, " AND r.halal=True AND EXISTS(SELECT 1 FROM categories at c5 WHERE c5.business_id=r.id AND c5.category='Halal')", "add_to_query"],
-			('kosher',): [9, " AND r.kosher=True AND EXISTS(SELECT 1 FROM categories at c5 WHERE c5.business_id=r.id AND c5.category='Kosher')", "add_to_query"]
+			('halal',): [9, " AND r.halal=True AND EXISTS(SELECT 1 FROM categories as c5 WHERE c5.business_id=r.id AND c5.category='Halal')", "add_to_query"],
+			('kosher',): [9, " AND r.kosher=True AND EXISTS(SELECT 1 FROM categories as c5 WHERE c5.business_id=r.id AND c5.category='Kosher')", "add_to_query"]
 		}
 	},
 	9: {

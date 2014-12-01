@@ -27,6 +27,7 @@ def tell_me_more(answer, city):
 
 def fifteen(query):
 	cat_choices = query.replace('r.name', 'c.category') + " AND r.stars>=4 GROUP BY c.category"
+	print cat_choices + "*******************"
 	cursor.execute(cat_choices)
 	results = cursor.fetchall()
 	try:
@@ -36,6 +37,9 @@ def fifteen(query):
 
 	choices = [x[0]for x in result_choices]
 	str_result_choices = ", ".join(choices)
+	if not str_result_choices:
+		print "nothing there"
+		return None
 	return str_result_choices
 
 def get_next_state(current_state, answer):
@@ -79,6 +83,7 @@ def traverse_questions(state, user_answer):
 	# global question_path
 	global query
 	global cursor
+	global last_state
 
 
 	if state == 0:
@@ -106,16 +111,24 @@ def traverse_questions(state, user_answer):
 				return next_state, bot_question
 
 			query_action, query_addition = get_query_action_and_addition(state, user_answer)
+			print "The query action and addition are:", (query_action, query_addition)
 
 
 			if next_state == 15:
+				print "the next state is 15"
 				query = query + query_addition
+				print query
 				choices = fifteen(query)
-				return 20, "Here are your category choices. Pick one: " + choices
+				print choices
+				if choices:
+					return 20, "Here are your category choices. Pick one: " + choices
+				else:
+					return state, "I got nothin WOOF! Try a different answer " + bot_question
 
 			if query_action == 'add_to_query':
 				cursor.execute(query + query_addition + " GROUP BY r.name")
 				results = cursor.fetchall()
+				# print results
 				if results:
 					query = query + query_addition
 			elif query_action == 'end':
