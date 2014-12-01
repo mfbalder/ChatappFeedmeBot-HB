@@ -116,8 +116,7 @@
 
 			var ronnie = new RegExp('AskRonnie');
 			if(ronnie.test(chat_room)){
-				console.log("ronnie!");
-				$("#" + chat_room + " div.log").append('<p>' + logged_in_user + ': ' + message + '</p>');
+				$("#" + chat_room + " div.log").append('<p class="self_color">' + logged_in_user + ': ' + message + '</p>');
 	    		$(".log").scrollTop($(".log")[0].scrollHeight);
 	    		socket.emit("talk to ronnie", {'message': message, 'room': chat_room})
 			}
@@ -137,20 +136,21 @@
 		});
 
 
-
-	    // when the user sends a message, relay that message to the server
-	    // $('form#send_message').submit(function(event){
-	    // 	event.preventDefault();
-	    // 	socket.emit('my event', {data: $("#message").val(), 'room': current_room});
-	    // 	$("#message").val("");
-	    // });
-
 	    // when the client gets that message back from the server,
 	    // display it in the log
 	    socket.on('message to display', function(response){
 	    	var chat_room = response.room;
 	    	// console.log($("#" + chat_room + " div.log"));
-	    	$("#" + chat_room + " div.log").append('<p>' + response.user + ': ' + response.message + '</p>');
+	    	if(response.user == logged_in_user){
+	    		$("#" + chat_room + " div.log").append('<p class="self_color">' + response.user + ': ' + response.message + '</p>');
+	    	}
+	    	else if(response.user == "Ronnie"){
+	    		$("#" + chat_room + " div.log").append('<p class="other_color">' + response.user + ': ' + response.message + '</p>');
+	    	}
+	    	else{
+	    		$("#" + chat_room + " div.log").append('<p class="other_color">' + response.user + ': ' + response.message + '</p>');
+	    	}
+	    	// $("#" + chat_room + " div.log").append('<p>' + response.user + ': ' + response.message + '</p>');
 	    	$(".log").scrollTop($(".log")[0].scrollHeight);
 	    });
 
@@ -185,7 +185,16 @@
 		$(document).on('mouseup', '.button_style', function(event){
 			$(this).css('backgroundColor', 'gray');
 		});
-		
+
+		$(document).on('focusout', '.chat_box', function(event){
+			$(this).addClass('blurred');
+		});
+
+		$(document).on('focusin', '.chat_box', function(event){
+			$(this).removeClass('blurred');
+		});
+	
+
 
 
 		

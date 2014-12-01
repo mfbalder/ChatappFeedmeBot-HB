@@ -247,6 +247,18 @@ form.send_message {
 	width: 200px;
 		}
 
+.self_color{
+	background-color: #ffe6a2;
+}
+
+.other_color {
+	background-color: lightgrey;
+}
+
+.blurred {
+	opacity: 0.4;
+}
+
 /*****************/
 
 @media (max-width: 900px) {
