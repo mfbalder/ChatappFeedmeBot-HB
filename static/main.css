@@ -86,6 +86,11 @@ body {
 	border: 1px solid black;
 	background-color: gray;
 	font-size: 9px;
+	border-radius: 4px;
+}
+
+.button_style:focus {
+	outline: none;
 }
 
 .register_box input[type="submit"] {
@@ -105,6 +110,7 @@ body {
 #online_users {
 	display: inline-block;
 	width: 12%;
+	min-width: 150px;
 	height: 400px;
 	vertical-align: top;
 	/*border: 1px solid black;*/
@@ -179,6 +185,7 @@ body {
 	font-family: 'Viga', sans-serif;
 	border-radius: 5px;
 	border: 3px solid black;
+	vertical-align: top;
 }
 
 .chat_box p {
@@ -188,6 +195,12 @@ body {
 .end_chat {
 	float: right;
 	font-size: 9px;
+	margin: 1%;
+}
+
+.chat_label {
+	padding-bottom: 3px;
+	border-bottom: 1px dotted gray;
 }
 
 
@@ -202,10 +215,37 @@ form.send_message {
 }
 
 .send_message input[type="text"]{
-	width: 300px;
+	/*width: 300px;*/
+	width: 82%;
+	font-family: 'Lato', sans-serif;
+}
+
+.send_message input[type="text"]:focus{
+	outline: none;
 }
 
 
 .obj{
 	width: 200px;
 		}
+
+/*****************/
+
+@media (max-width: 900px) {
+	.button_style {
+	  	font-size: 12px;
+	  	margin-top: 5%;
+	  	width: 100%;
+  	}
+	.send_message input[type="text"]{
+		width: 100%!important;
+	}
+
+	.end_chat {
+		margin: 2% 0;
+	}
+
+	.log {
+		font-size: 13px;
+	}
+}

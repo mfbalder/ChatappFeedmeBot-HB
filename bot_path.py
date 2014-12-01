@@ -61,18 +61,18 @@ path = {
 		'bot_statement': 'Personally WOOF! I really like tennis balls and peanut butter. Which do you prefer?',
 		'branches': {
 			('tennis ball', 'ball'): [15, " AND EXISTS(SELECT 1 FROM categories as c3 WHERE c3.business_id=r.id AND c3.category IN ('Donuts', 'Desserts', 'Bakeries', 'Cafes', 'Cupcakes', 'Pretzels', 'Patisserie/Cake Shop'))", "add_to_query"],
-			('peanut',): [15, " AND EXISTS(SELECT 1 FROM categories as c3 WHERE c3.business_id=r.id AND c3.category IN ('Ice Cream & Frozen Yogurt', 'Gelato', 'Shaved Ice'))", "add_to_query"],
+			('peanut', 'butter'): [15, " AND EXISTS(SELECT 1 FROM categories as c3 WHERE c3.business_id=r.id AND c3.category IN ('Ice Cream & Frozen Yogurt', 'Gelato', 'Shaved Ice'))", "add_to_query"],
 			('trick question', 'liar'): [15, " AND EXISTS(SELECT 1 FROM categories as c3 WHERE c3.business_id=r.id AND c3.category = 'Candy Stores')", "add_to_query"]
 		}
 	},
 	7: {
 		'return': 'question',
-		'bot_statement': 'Eat in, take out, or delivery?',
+		'bot_statement': 'Eat in, doggie bag (woof woof!), or delivery?',
 		'branches': {
 			('eat in', 'in'): [8, None, None],
-			('takeout', 'tk', 'out', 'pick up'): [8, " AND r.takeout=True", "add_to_query"],
+			('takeout', 'tk', 'out', 'pick up', 'doggie'): [8, " AND r.takeout=True", "add_to_query"],
 			('delivery', 'deliver', 'delivered'): [8, " AND r.delivery=True", "add_to_query"],
-			('lazy',): [8, " AND r.drive_thru=True", "add_to_query"]
+			('lazy', 'tired'): [8, " AND r.drive_thru=True", "add_to_query"]
 		}
 	},
 	8: {
