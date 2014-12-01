@@ -87,6 +87,7 @@ body {
 	background-color: #A8A8A8;
 	font-size: 9px;
 	border-radius: 4px;
+	float: right;
 }
 
 .button_style:focus {
@@ -216,7 +217,7 @@ form.send_message {
 
 .send_message input[type="text"]{
 	/*width: 300px;*/
-	width: 82%;
+	width: 85%;
 	font-family: 'Lato', sans-serif;
 }
 
