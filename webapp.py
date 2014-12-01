@@ -197,7 +197,7 @@ def talk_to_ronnie(message):
 
 	answer = message['message']
 
-	if "tell me about" in answer.lower():
+	if "tell me" in answer.lower():
 		location,venue = bot.tell_me_more(answer, city)
 		print venue
 		emit('message to display', {'message': "It's at " + location + " <a class='get_phone' href='/send_text?location=%s&number='>Click to have the address texted to you</a>" % location, 'user': 'Ronnie', 'room': message['room']}, room=message['room'])

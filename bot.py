@@ -92,38 +92,40 @@ def traverse_questions(state, user_answer):
 		print result
 		return None, "I give you..." + result[0] + "!"
 
+	try:
+		if d[locals()['state']]['return'] == 'question':
+			next_state = get_next_state(state, user_answer)
+			if next_state == None:
+				return None, None
 
-	if d[locals()['state']]['return'] == 'question':
-		next_state = get_next_state(state, user_answer)
-		if next_state == None:
-			return None, None
+			bot_question = get_next_question(next_state)
 
-		bot_question = get_next_question(next_state)
-
-		if state == 1:
-			query_addition = d[1]['branches']['answer'][1].replace('?', user_answer)
-			query = query + query_addition
-			return next_state, bot_question
-
-		query_action, query_addition = get_query_action_and_addition(state, user_answer)
-
-
-		if next_state == 15:
-			query = query + query_addition
-			choices = fifteen(query)
-			return 20, "Here are your category choices. Pick one: " + choices
-
-		if query_action == 'add_to_query':
-			cursor.execute(query + query_addition + " GROUP BY r.name")
-			results = cursor.fetchall()
-			if results:
+			if state == 1:
+				query_addition = d[1]['branches']['answer'][1].replace('?', user_answer)
 				query = query + query_addition
-		elif query_action == 'end':
-			cursor.execute(query + query_addition + " ORDER BY r.stars LIMIT 1")
-			result = cursor.fetchone()
-			return None, "I give you..." + result[0] + "!"
+				return next_state, bot_question
 
-		return next_state, bot_question
+			query_action, query_addition = get_query_action_and_addition(state, user_answer)
+
+
+			if next_state == 15:
+				query = query + query_addition
+				choices = fifteen(query)
+				return 20, "Here are your category choices. Pick one: " + choices
+
+			if query_action == 'add_to_query':
+				cursor.execute(query + query_addition + " GROUP BY r.name")
+				results = cursor.fetchall()
+				if results:
+					query = query + query_addition
+			elif query_action == 'end':
+				cursor.execute(query + query_addition + " ORDER BY r.stars LIMIT 1")
+				result = cursor.fetchone()
+				return None, "I give you..." + result[0] + "!"
+
+			return next_state, bot_question
+	except KeyError:
+		return None, None
 
 
 
