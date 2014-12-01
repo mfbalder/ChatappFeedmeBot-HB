@@ -10,14 +10,28 @@ cursor = dbconn.cursor()
 last_state = None
 query = "SELECT r.name FROM restaurants AS r join categories AS c ON r.id=c.business_id join categorylookup AS l ON l.category=c.category"
 
+
+
 def tell_me_more(answer, city):
-	# Tell me about ______
+	"""
+
+	Takes the user's request (for a particular business) and the city it's in.
+
+		answer --> assumes the form of "tell me about _________"
+			ex. "tell me about Steve's Bakery"
+
+		city --> a city in string form
+			ex. "Las Vegas"
+		
+	Returns the address, and the business name.
+
+	"""
+
 	full_answer = answer.split()
 	user_answer = ' '.join(full_answer[3:])
-	print user_answer
 
 	q = "SELECT r.address FROM restaurants as r WHERE r.name = %s and r.city = %s"
-	print q
+
 	try:
 		cursor.execute(q, (user_answer, city))
 		result = cursor.fetchone()
@@ -25,7 +39,21 @@ def tell_me_more(answer, city):
 	except TypeError:
 		return "an unknown location. Are you sure you meant %s?" % user_answer, user_answer
 
+
 def fifteen(query):
+	"""
+
+	Takes the current query as an arguement.
+
+		query --> a piece of a PostgreSQL query in string form
+			ex. "SELECT r.name FROM restaurants as r WHERE r.vegan=TRUE"
+
+	For state #15, the path lets the user select from 5 random categories that remain available.
+
+	Function queries for all the available categories, chooses 5 at random, and returns them as 
+	  a comma-separated string
+
+	"""
 	cat_choices = query.replace('r.name', 'c.category') + " AND r.stars>=4 GROUP BY c.category"
 	print cat_choices + "*******************"
 	cursor.execute(cat_choices)
@@ -42,7 +70,22 @@ def fifteen(query):
 		return None
 	return str_result_choices
 
+
+
 def get_next_state(current_state, answer):
+	"""
+	
+	Takes the most recent state, and the user's answer to that state's question, as arguements.
+
+		current_state --> an integer
+			ex. 12
+
+		answer --> the answer the user submitted, a string
+			ex. "yes I think I would like a snack"
+
+	Returns the next state in the path, based on the given answer.
+
+	"""
 	for branch in d[locals()['current_state']]['branches']:
 		for each in branch:
 			# check to see which branch matches the user's input
@@ -51,6 +94,8 @@ def get_next_state(current_state, answer):
 				next_state = d[locals()['current_state']]['branches'][locals()['branch']][0]
 				return next_state
 	return None
+
+
 
 def get_query_action_and_addition(current_state, answer):
 	for branch in d[locals()['current_state']]['branches']:
