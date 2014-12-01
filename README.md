@@ -76,12 +76,12 @@ to add them to your environment variables:
 ### Features:
 
 - Fully featured chat application using websockets for bi-directional, real time conversations
-..* Log in and log out
-..* Allows for multiple users
-..* Supports simultaneous conversations per user
-..* Persistant chat bot
-..* Displays all users logged in at any given time, updates as users log in and out
-..* Flask app renders HTML, handles websockets
+	* Log in and log out
+	* Allows for multiple users
+	* Supports simultaneous conversations per user
+	* Persistant chat bot
+	* Displays all users logged in at any given time, updates as users log in and out
+	* Flask app renders HTML, handles websockets
 - Restaurant recommendation engine chat bot using a subsect of the Yelp dataset
 
 
