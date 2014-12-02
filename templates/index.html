@@ -29,8 +29,8 @@
 	$(document).ready(function() {
 
 		// sets the current user and current room
-		var logged_in_user='{{ user }}',
-			current_room = '';
+		var  loggedInUser='{{ user }}',
+			currentRoom = '';
 
 
 		// connect the socket
@@ -39,61 +39,61 @@
 
 	    // joins the current user to their own personal room
 		socket.emit('join room', 
-					{'username': logged_in_user, 'room': logged_in_user}
+					{'username':  loggedInUser, 'room':  loggedInUser}
 		);
 
 		socket.emit('refresh connected users');
 
-		console.log('The ' + logged_in_user + ' is being added to room:' + logged_in_user);
+		console.log('The ' +  loggedInUser + ' is being added to room:' +  loggedInUser);
 
 		// when a user's room receives a command
 		socket.on('interpret command', function(data) {
 			var command = data.command,
-				command_body = data.body,
-				command_origin = data.origin;
+				commandBody = data.body,
+				commandOrigin = data.origin;
 
 			// if that command is a J (for join), join them to the given room
 			if(command === 'J') {
-				var new_room = command_body
+				var newRoom = commandBody
 				socket.emit('join room', 
-							{'username': logged_in_user, 'room': new_room}
+							{'username':  loggedInUser, 'room': newRoom}
 				); 
 
 				$('#chat_box').removeClass('hidden');
 				// establish that this new room is the room we're currently talking in
-				current_room = new_room
+				currentRoom = newRoom
 			}
 
 			// if the user receives a UL (update list) command, refresh their list of connected users
 			else if(command === 'UL') {
-				$('#online_users').load('/refresh_users?user=' + logged_in_user);
+				$('#online_users').load('/refresh_users?user=' +  loggedInUser);
 			}
 
 		});
 
 		// when the current user clicks on a connected user
 		$(document).on('click', '.user_link', function(event) {
-			var user_to_talk_to = $(this).attr('id');
+			var userToTalkTo = $(this).attr('id');
 			// create a new room name for the two users to share
 
-			if(user_to_talk_to < logged_in_user) {
-				var new_room = user_to_talk_to + logged_in_user;
+			if(userToTalkTo <  loggedInUser) {
+				var newRoom = userToTalkTo +  loggedInUser;
 			} 
 			else {
-				var new_room = logged_in_user + user_to_talk_to;
+				var newRoom =  loggedInUser + userToTalkTo;
 			}
 
 
-			// send command to user_to_talk_to's room
+			// send command to userToTalkTo's room
 			socket.emit('receive command', 
-						{'command': 'J', 'body':new_room, 'room': user_to_talk_to}
+						{'command': 'J', 'body':newRoom, 'room': userToTalkTo}
 			);
-			// send command to logged_in_user's room
+			// send command to  loggedInUser's room
 			socket.emit('receive command', 
-						{'command': 'J', 'body':new_room, 'room': logged_in_user}
+						{'command': 'J', 'body':newRoom, 'room':  loggedInUser}
 			);
 			socket.emit('open chat', 
-						{'submitting': logged_in_user, 'receiving': user_to_talk_to, 'room': new_room}
+						{'submitting':  loggedInUser, 'receiving': userToTalkTo, 'room': newRoom}
 			);
 
 		});
@@ -119,7 +119,7 @@
 				ronnie = new RegExp('AskRonnie');
 
 			if(ronnie.test(chat_room)) {
-				$('#' + chat_room + ' div.log').append('<p class="self_color">' + logged_in_user + ': ' + message + '</p>');
+				$('#' + chat_room + ' div.log').append('<p class="self_color">' +  loggedInUser + ': ' + message + '</p>');
 	    		$('.log').scrollTop($('.log')[0].scrollHeight);
 	    		socket.emit('talk to ronnie', 
 	    					{'message': message, 'room': chat_room}
@@ -137,7 +137,7 @@
 		$(document).on('click', '.end_chat', function(event) {
 			// send a message telling the other user that the chat has been exited
 			socket.emit('message event', 
-						{data: logged_in_user + ' has left the chat.', 'room': $(this).parent('.chat_box').attr('id')}
+						{data:  loggedInUser + ' has left the chat.', 'room': $(this).parent('.chat_box').attr('id')}
 			);
 			$(this).parent('.chat_box').remove();
 			// remove the user from that joint room
@@ -147,26 +147,26 @@
 	    // when the client gets that message back from the server,
 	    // display it in the log
 	    socket.on('message to display', function(response) {
-	    	var chat_room = response.room;
+	    	var chatRoom = response.room;
 	    	// console.log($("#" + chat_room + " div.log"));
-	    	if(response.user === logged_in_user) {
-	    		$('#' + chat_room + ' div.log').append('<p class="self_color">' + response.user + ': ' + response.message + '</p>');
+	    	if(response.user ===  loggedInUser) {
+	    		$('#' + chatRoom + ' div.log').append('<p class="self_color">' + response.user + ': ' + response.message + '</p>');
 	    		$('.log').scrollTop($('.log')[0].scrollHeight);
 	    	}
 	    	else {
-	    		$('#' + chat_room + ' div.log').append('<p class="other_color">' + response.user + ': ' + response.message + '</p>');
+	    		$('#' + chatRoom + ' div.log').append('<p class="other_color">' + response.user + ': ' + response.message + '</p>');
 	    		$('.log').scrollTop($('.log')[0].scrollHeight);
 	    	}
-	    	// $("#" + chat_room + " div.log").append('<p>' + response.user + ': ' + response.message + '</p>');
+	    	// $("#" + chatRoom + " div.log").append('<p>' + response.user + ': ' + response.message + '</p>');
 	    	
 	    });
 
 	    socket.on('app message display', function(response) {
-	    	var chat_room = response.room;
+	    	var chatRoom = response.room;
 
-	    	$('#' + chat_room + ' div.log').append('<p>' + response.message + '</p>');
+	    	$('#' + chatRoom + ' div.log').append('<p>' + response.message + '</p>');
 	    	$('.log').scrollTop($('.log')[0].scrollHeight);
-	    	// $('#' + chat_room + ' .send_message').addClass('encrypted');
+	    	// $('#' + chatRoom + ' .send_message').addClass('encrypted');
 	    });
 
 		// when a user logs out, tell all users to fresh their conencted list
