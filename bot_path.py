@@ -133,6 +133,8 @@ path = {
 			('hey now', 'fine'): [20, " AND EXISTS(SELECT 1 FROM categories as c4 WHERE c4.business_id=r.id AND c4.category IN ('Dive Bars', 'Sports Bars')", "end"]
 		}
 	}, 
+	# the following 3 queries exist to represent next states, but have different
+	# protocol and are handled differently
 	15: {
 
 	},
@@ -147,4 +149,3 @@ path = {
 
 
 
-####### All queries end when they look for things. 15 is a special breaking point where it asks users to choose a category that the bot has to generate

@@ -1,13 +1,10 @@
 body {
 		margin: 0;
 		padding: 0;
-		/*background-color: #ddeeee;*/
-		/*background-color: #20457C; the blue*/ 
-		/*background-color: #f2f2f2 the black;*/
 		background-color: #2f363d;
 	}
 
-/*header*/
+/*******header********/
 
 #navbar {
 	background-color: #FFD04D;
@@ -28,7 +25,6 @@ body {
 #navbar #logout {
 	text-align: right;
 	display: inline;
-	/*color: white;*/
 	color: black;
 	text-decoration: none;
 	float: right;
@@ -48,7 +44,7 @@ body {
 	padding-right: 4px;
 }
 
-/*login page*/
+/*****login page*******/
 
 .register-box {
 	width: 30%;
@@ -106,7 +102,7 @@ input.button-style {
 	display: none!important;
 }
 
-/*home page*/
+/******home page********/
 
 #online-users {
 	display: inline-block;
@@ -115,7 +111,6 @@ input.button-style {
 	height: 400px;
 	vertical-align: top;
 	padding: 1% 2%;
-/*	background-color: #1BB287;*/
 	background-color: lightgray;
 	border: 2px solid #20252a;
 	margin: 3%;
@@ -149,7 +144,6 @@ input.button-style {
 }
 
 .logo {
-	/*background-color: purple;*/
 	background-color: #1BB287;
 	background-size: 65px;
 	background-repeat: no-repeat;
@@ -173,13 +167,9 @@ input.button-style {
 	width: 65%;
 }
 
-/*.user-box {
-	display: inline-block;
-}*/
 .chat-box {
 	display: inline-block;
 	width: 43%;
-	/*height: 400px;*/
 	background-color: white;
 	padding: 4px;
 	margin: 0 2%;
@@ -227,7 +217,6 @@ form.send-message {
 }
 
 .send-message input[type="text"]{
-	/*width: 300px;*/
 	width: 83%;
 	font-family: 'Lato', sans-serif;
 	height:22px;
