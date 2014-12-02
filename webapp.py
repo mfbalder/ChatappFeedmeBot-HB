@@ -22,23 +22,6 @@ next_state = None
 last_state = None
 city = None
 
-# from twilio.rest import TwilioRestClient
-# import os
-
-# def send_text_message(message, phone_num):
-# 	ACCOUNT_SID = os.environ.get('TWILIO_ACCOUNT_SID')
-# 	AUTH_TOKEN = os.environ.get('TWILIO_AUTH_TOKEN')
-# 	TWILIO_NUMBER = os.environ.get('TWILIO_NUMBER')
-
-# 	client = TwilioRestClient(ACCOUNT_SID, AUTH_TOKEN)
-
-# 	m = client.messages.create(
-# 		to=phone_num,
-# 		from_=TWILIO_NUMBER,
-# 		body=message,)
-# 	return m.sid
-
-
 class UserUnAuth(Exception):
 	"""User isn't logged in."""
 
@@ -57,15 +40,11 @@ def get_user():
 
 @app.route('/')
 def index():
-	# FIXME: send unauth users to login form
 
-	# user = session.get("user")   # "joel" or None
 	user = get_user()
 	if user is None:
 		return redirect("/login")
 
-
-	# print "index: user=", user
 	users_to_display = [u for u in connected_users if u != user]
 	return render_template('index.html', 
 		users = users_to_display,
@@ -106,7 +85,6 @@ def logout():
 		print "This is the list of connected users after %s has logged out" % user
 		print connected_users
 	return redirect("/login")
-	# return render_template("login.html")
 
 @app.route("/set_session")
 def set_session():
@@ -240,8 +218,6 @@ def talk_to_ronnie(message):
 		
 		else:
 			answer = answer.lower()
-			# print "In the webapp else: the last state is %d and the answer for that is %s" % (bot.last_state, answer)
-			# print "About to pass %d into the traverse_questions function with an answer of %s" % (next_state, answer) 
 			s, q = bot.traverse_questions(next_state, answer)
 			bot.last_state = next_state
 
@@ -263,7 +239,6 @@ def talk_to_ronnie(message):
 				if chance > 0.7:
 					ronnie_thinking(message)
 				emit('message to display', {'message': question, 'user': 'Ronnie', 'room': message['room']}, room=message['room'])
-				# send_message(question, message['room'])
 		return
 
 @socketio.on('receive command', namespace='/chat')
@@ -283,7 +258,6 @@ def on_join(data):
 	if room not in connected_users.get(user, []):
 		connected_users.setdefault(user, []).append(room)
 	print "connected users in join room", connected_users
-	# send_message("Success! Connected to %s" % room, room)
 	refresh_connecteduser_lists()
 
 @socketio.on('open chat', namespace='/chat')

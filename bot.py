@@ -55,9 +55,9 @@ def fifteen(query):
 
 	"""
 	cat_choices = query.replace('r.name', 'c.category') + " AND r.stars>=4 GROUP BY c.category"
-	print cat_choices + "*******************"
 	cursor.execute(cat_choices)
 	results = cursor.fetchall()
+
 	try:
 		result_choices = random.sample(results, 5)
 	except ValueError:
@@ -66,8 +66,8 @@ def fifteen(query):
 	choices = [x[0]for x in result_choices]
 	str_result_choices = ", ".join(choices)
 	if not str_result_choices:
-		print "nothing there"
 		return None
+
 	return str_result_choices
 
 
@@ -88,11 +88,14 @@ def get_next_state(current_state, answer):
 	"""
 	for branch in d[locals()['current_state']]['branches']:
 		for each in branch:
+
 			# check to see which branch matches the user's input
 			if each in answer:
+
 				# get the next state, and the question for that state
 				next_state = d[locals()['current_state']]['branches'][locals()['branch']][0]
 				return next_state
+
 	return None
 
 
@@ -139,7 +142,7 @@ def traverse_questions(state, user_answer):
 		query = query + final_search
 		cursor.execute(query + " ORDER BY r.stars LIMIT 1")
 		result = cursor.fetchone()
-		print result
+
 		return None, "I give you..." + result[0] + "!"
 
 	try:
@@ -156,13 +159,12 @@ def traverse_questions(state, user_answer):
 				return next_state, bot_question
 
 			query_action, query_addition = get_query_action_and_addition(state, user_answer)
-			print "The query action and addition are:", (query_action, query_addition)
 
 
 			if next_state == 15:
-				print "the next state is 15"
+
 				query = query + query_addition
-				print query
+
 				choices = fifteen(query)
 				print choices
 				if choices:
@@ -173,7 +175,7 @@ def traverse_questions(state, user_answer):
 			if query_action == 'add_to_query':
 				cursor.execute(query + query_addition + " GROUP BY r.name")
 				results = cursor.fetchall()
-				# print results
+
 				if results:
 					query = query + query_addition
 			elif query_action == 'end':
@@ -184,63 +186,10 @@ def traverse_questions(state, user_answer):
 			return next_state, bot_question
 	except KeyError:
 		return None, None
-
-
-
-
-
-def project_logic():
-	global stored_info
-	# set the current time --> not dealing with this now
-	# stored_info.setdefault('current_time', time.strftime("%H:%M"))
-
-	x = 1
-	while True:
-		if x not in d:
-			break
-		# prints the next question
-		print d[locals()['x']]['bot_statement']
-
-		# gets an answer from the user
-		answer = raw_input()
-		clean_answer = answer.split()
-		# clean_answer = [word for word in answer.split() if word not in stopword_list]
-		# print clean_answer
-
-		# gets the value for that branch
-		# for item in d[locals()['x']]['branches']:
-		# 	for word in clean_answer:
-		# 		if word in item:
-		# 			next_point = d[locals()['x']]['branches'][locals()['item']]
-		# 			x = next_point
-
-		for item in d[locals()['x']]['branches']:
-			for each in item:
-				if each in clean_answer:
-					print each
-					next_point = d[locals()['x']]['branches'][locals()['item']]
-					print next_point
-					x = next_point
-
-
-# [1, 2, 3, 4] --> list of question #s for order and to keep track of its state
-# state machine
-# the function is a stateless track
-# adding the query string after each branch
-# no while loop, pass the current state and the answer into the project_logic function	
-# my chat bot as a state machine --> each question is a state, with the branches as transitions
-# should i write a class that represents each node --> current state, next state, etc.
-
 	
 
 def main():
-	start = raw_input().lower()
-	if "hi" in start or "hello" in start and "ronnie" in start:
-		print "Well hello there friend!"
-		print traverse_questions(0, None)
-	else:
-		print "I'm Ronnie. I have just met you and a looove you will you be my master?"
-
+	pass
 
 if __name__ == "__main__":
 	main()

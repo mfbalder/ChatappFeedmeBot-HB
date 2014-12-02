@@ -2,15 +2,15 @@
 	{% extends "base.html" %}
 	{% block body %}
 
-	<div id="online_users">
+	<div id='online_users'>
 		<h4>Connected Users</h4>
 		{% if users %}
 			<ul>
 			{% for user in users %}
 				{% if user == 'AskRonnie' %}
-				<li><div class='logo' id='ronnielogo'></div><a class="user_link" id="{{ user }}" href="#">{{ user }}</a></li>
+				<li><div class='logo' id='ronnielogo'></div><a class='user_link' id='{{ user }}' href='#'>{{ user }}</a></li>
 				{% else %}
-				<li><div class='logo'></div><a class="user_link" id="{{ user }}" href="#">{{ user }}</a></li>
+				<li><div class='logo'></div><a class='user_link' id='{{ user }}' href='#'>{{ user }}</a></li>
 				{% endif %}
 			{% endfor %}
 			</ul>
@@ -22,16 +22,16 @@
 
 
 
-	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-	<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/0.9.16/socket.io.min.js"></script>
-	<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
+	<script src='//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
+	<script type='text/javascript' src='//cdnjs.cloudflare.com/ajax/libs/socket.io/0.9.16/socket.io.min.js'></script>
+	<script src='//ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js'></script>
 	<script>
 	$(document).ready(function(){
 
 		// sets the current user and current room
-		var logged_in_user="{{ user }}";
+		var logged_in_user='{{ user }}';
 		console.log(logged_in_user);
-		var current_room = "";
+		var current_room = '';
 		var user_private_key = null;
 		var user_public_key = null;
 		var other_public_key = null;
@@ -48,7 +48,7 @@
 				 'room': logged_in_user
 				});
 		socket.emit('refresh connected users');
-		console.log("The " + logged_in_user + " is being added to room:" + logged_in_user);
+		console.log('The ' + logged_in_user + ' is being added to room:' + logged_in_user);
 
 		// when a user's room receives a command
 		socket.on('interpret command', function(data){
@@ -58,16 +58,16 @@
 
 			// if that command is a J (for join), join them to the given room
 			if(command == 'J'){
-				console.log("join");
+				console.log('join');
 				var new_room = command_body
 				socket.emit('join room', {'username': logged_in_user, 'room': new_room}); 
-				$('#chat_box').removeClass("hidden");
+				$('#chat_box').removeClass('hidden');
 				// establish that this new room is the room we're currently talking in
 				current_room = new_room
 			}
 			// if the user receives a UL (update list) command, refresh their list of connected users
 			if(command == 'UL'){
-				$("#online_users").load("/refresh_users?user=" + logged_in_user);
+				$('#online_users').load('/refresh_users?user=' + logged_in_user);
 			}
 
 		});
@@ -95,10 +95,10 @@
 
 		socket.on('open chat box', function(event){
 			console.log(event);
-			if($("#" + event.chat_room).length === 0){
+			if($('#' + event.chat_room).length === 0){
 				console.log("The chatroom doesn't exist yet, add it");
 				var html = event.template;
-				$("#chat_section").append(html);
+				$('#chat_section').append(html);
 			}
 			else {
 				console.log("The chatroom already exists. Don't add it");
@@ -109,29 +109,28 @@
 		$(document).on('submit', 'form', function(event){
 			event.preventDefault();
 			var this_ = $(this)
-			var chat_room = this_.parent(".chat_box").attr("id");
+			var chat_room = this_.parent('.chat_box').attr('id');
 			console.log(chat_room);
 			console.log(this_.serialize());
-			var message = this_.find("input[name='message']").val();
+			var message = this_.find('input[name="message"]').val();
 
 			var ronnie = new RegExp('AskRonnie');
 			if(ronnie.test(chat_room)){
-				$("#" + chat_room + " div.log").append('<p class="self_color">' + logged_in_user + ': ' + message + '</p>');
-	    		$(".log").scrollTop($(".log")[0].scrollHeight);
-	    		socket.emit("talk to ronnie", {'message': message, 'room': chat_room})
+				$('#' + chat_room + ' div.log').append('<p class="self_color">' + logged_in_user + ': ' + message + '</p>');
+	    		$('.log').scrollTop($('.log')[0].scrollHeight);
+	    		socket.emit('talk to ronnie', {'message': message, 'room': chat_room})
 			}
 			else{
-			// console.log(this_.parent(".chat_box").attr("id"))
 				socket.emit('message event', {data: message, 'room': chat_room});
 			}
-			this_.find("input[name='message']").val("");
+			this_.find('input[name="message"]').val('');
 		});
 
 		// if the user closes the window, remove it from their DOM
 		$(document).on('click', '.end_chat', function(event){
 			// send a message telling the other user that the chat has been exited
-			socket.emit("message event", {data: logged_in_user + " has left the chat.", 'room': $(this).parent(".chat_box").attr("id")});
-			$(this).parent(".chat_box").remove();
+			socket.emit('message event', {data: logged_in_user + ' has left the chat.', 'room': $(this).parent('.chat_box').attr('id')});
+			$(this).parent('.chat_box').remove();
 			// remove the user from that joint room
 		});
 
@@ -142,12 +141,12 @@
 	    	var chat_room = response.room;
 	    	// console.log($("#" + chat_room + " div.log"));
 	    	if(response.user == logged_in_user){
-	    		$("#" + chat_room + " div.log").append('<p class="self_color">' + response.user + ': ' + response.message + '</p>');
-	    		$(".log").scrollTop($(".log")[0].scrollHeight);
+	    		$('#' + chat_room + ' div.log').append('<p class="self_color">' + response.user + ': ' + response.message + '</p>');
+	    		$('.log').scrollTop($('.log')[0].scrollHeight);
 	    	}
 	    	else{
-	    		$("#" + chat_room + " div.log").append('<p class="other_color">' + response.user + ': ' + response.message + '</p>');
-	    		$(".log").scrollTop($(".log")[0].scrollHeight);
+	    		$('#' + chat_room + ' div.log').append('<p class="other_color">' + response.user + ': ' + response.message + '</p>');
+	    		$('.log').scrollTop($('.log')[0].scrollHeight);
 	    	}
 	    	// $("#" + chat_room + " div.log").append('<p>' + response.user + ': ' + response.message + '</p>');
 	    	
@@ -155,12 +154,10 @@
 
 	    socket.on('app message display', function(response){
 	    	var chat_room = response.room;
-	    	// if(chat_room.indexOf("AskRonnie" != -1)){
-	    	// 	user_label = "Ronnie";
 
-	    	$("#" + chat_room + " div.log").append('<p>' + response.message + '</p>');
-	    	$(".log").scrollTop($(".log")[0].scrollHeight);
-	    	$("#" + chat_room + " .send_message").addClass("encrypted");
+	    	$('#' + chat_room + ' div.log').append('<p>' + response.message + '</p>');
+	    	$('.log').scrollTop($('.log')[0].scrollHeight);
+	    	// $('#' + chat_room + ' .send_message').addClass('encrypted');
 	    });
 
 		// when a user logs out, tell all users to fresh their conencted list
@@ -170,7 +167,7 @@
 
 		$(document).on('click', '.get_phone', function(event){
 			event.preventDefault();
-			num = prompt("Please enter your phone number", "(xxx)xxx-xxxx")
+			num = prompt('Please enter your phone number', '(xxx)xxx-xxxx')
 			var href = $(this).attr('href') + num;
 			console.log(href);
 			$.get(href);
