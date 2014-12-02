@@ -38,12 +38,12 @@
 
 
 	    // joins the current user to their own personal room
-		socket.emit(
-				'join room', 
-				{'username': logged_in_user, 
-				 'room': logged_in_user
-				});
+		socket.emit('join room', 
+					{'username': logged_in_user, 'room': logged_in_user}
+		);
+
 		socket.emit('refresh connected users');
+
 		console.log('The ' + logged_in_user + ' is being added to room:' + logged_in_user);
 
 		// when a user's room receives a command
@@ -55,13 +55,17 @@
 			// if that command is a J (for join), join them to the given room
 			if(command === 'J') {
 				var new_room = command_body
-				socket.emit('join room', {'username': logged_in_user, 'room': new_room}); 
+				socket.emit('join room', 
+							{'username': logged_in_user, 'room': new_room}
+				); 
+
 				$('#chat_box').removeClass('hidden');
 				// establish that this new room is the room we're currently talking in
 				current_room = new_room
 			}
+
 			// if the user receives a UL (update list) command, refresh their list of connected users
-			if(command === 'UL') {
+			else if(command === 'UL') {
 				$('#online_users').load('/refresh_users?user=' + logged_in_user);
 			}
 
@@ -81,10 +85,16 @@
 
 
 			// send command to user_to_talk_to's room
-			socket.emit('receive command', {'command': 'J', 'body':new_room, 'room': user_to_talk_to});
+			socket.emit('receive command', 
+						{'command': 'J', 'body':new_room, 'room': user_to_talk_to}
+			);
 			// send command to logged_in_user's room
-			socket.emit('receive command', {'command': 'J', 'body':new_room, 'room': logged_in_user});
-			socket.emit('open chat', {'submitting': logged_in_user, 'receiving': user_to_talk_to, 'room': new_room});
+			socket.emit('receive command', 
+						{'command': 'J', 'body':new_room, 'room': logged_in_user}
+			);
+			socket.emit('open chat', 
+						{'submitting': logged_in_user, 'receiving': user_to_talk_to, 'room': new_room}
+			);
 
 		});
 
@@ -111,10 +121,14 @@
 			if(ronnie.test(chat_room)) {
 				$('#' + chat_room + ' div.log').append('<p class="self_color">' + logged_in_user + ': ' + message + '</p>');
 	    		$('.log').scrollTop($('.log')[0].scrollHeight);
-	    		socket.emit('talk to ronnie', {'message': message, 'room': chat_room})
+	    		socket.emit('talk to ronnie', 
+	    					{'message': message, 'room': chat_room}
+	    		);
 			}
 			else {
-				socket.emit('message event', {data: message, 'room': chat_room});
+				socket.emit('message event', 
+							{data: message, 'room': chat_room}
+				);
 			}
 			this_.find('input[name="message"]').val('');
 		});
@@ -122,7 +136,9 @@
 		// if the user closes the window, remove it from their DOM
 		$(document).on('click', '.end_chat', function(event) {
 			// send a message telling the other user that the chat has been exited
-			socket.emit('message event', {data: logged_in_user + ' has left the chat.', 'room': $(this).parent('.chat_box').attr('id')});
+			socket.emit('message event', 
+						{data: logged_in_user + ' has left the chat.', 'room': $(this).parent('.chat_box').attr('id')}
+			);
 			$(this).parent('.chat_box').remove();
 			// remove the user from that joint room
 		});
@@ -183,13 +199,6 @@
 			$(this).removeClass('blurred');
 		});
 	
-
-
-
-		
-
-
-
 
 
 	});
