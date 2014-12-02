@@ -103,7 +103,9 @@ to add them to your environment variables:
 
 
 
-![picture](https://github.com/mfbalder/ChatappFeedmeBot-HB/blob/master/static/Screen\ Shot\ 2014-11-28\ at\ 4.09.21\ PM.png) 
+![picture](https://github.com/mfbalder/ChatappFeedmeBot-HB/blob/master/static/Screen%20Shot%202014-12-01%20at%204.49.08%20PM.png)
+
+![picture](https://github.com/mfbalder/ChatappFeedmeBot-HB/blob/master/static/Screen%20Shot%202014-12-01%20at%204.49.54%20PM.png) 
 
 
 
