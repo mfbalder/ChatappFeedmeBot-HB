@@ -10,12 +10,9 @@ body {
 /*header*/
 
 #navbar {
-	/*background-color: #333344;*/
 	background-color: #FFD04D;
 	height: 60px;
-	/*font-family: 'Quicksand', sans-serif;*/
 	font-family:'Righteous', cursive;;
-	/*color: white;*/
 	color: black;
 	border-bottom: 3px solid #20252a;
 }
@@ -119,10 +116,9 @@ input.button_style {
 	min-width: 150px;
 	height: 400px;
 	vertical-align: top;
-	/*border: 1px solid black;*/
 	padding: 1% 2%;
-	/*background-color: #ECDFBD;*/
-	background-color: #1BB287;
+/*	background-color: #1BB287;*/
+	background-color: lightgray;
 	border: 2px solid #20252a;
 	margin: 3%;
 	border-radius: 5px;
@@ -155,7 +151,8 @@ input.button_style {
 }
 
 .logo {
-	background-color: purple;
+	/*background-color: purple;*/
+	background-color: #1BB287;
 	background-size: 65px;
 	background-repeat: no-repeat;
 	background-position: center;

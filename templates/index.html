@@ -143,15 +143,14 @@
 	    	// console.log($("#" + chat_room + " div.log"));
 	    	if(response.user == logged_in_user){
 	    		$("#" + chat_room + " div.log").append('<p class="self_color">' + response.user + ': ' + response.message + '</p>');
-	    	}
-	    	else if(response.user == "Ronnie"){
-	    		$("#" + chat_room + " div.log").append('<p class="other_color">' + response.user + ': ' + response.message + '</p>');
+	    		$(".log").scrollTop($(".log")[0].scrollHeight);
 	    	}
 	    	else{
 	    		$("#" + chat_room + " div.log").append('<p class="other_color">' + response.user + ': ' + response.message + '</p>');
+	    		$(".log").scrollTop($(".log")[0].scrollHeight);
 	    	}
 	    	// $("#" + chat_room + " div.log").append('<p>' + response.user + ': ' + response.message + '</p>');
-	    	$(".log").scrollTop($(".log")[0].scrollHeight);
+	    	
 	    });
 
 	    socket.on('app message display', function(response){
