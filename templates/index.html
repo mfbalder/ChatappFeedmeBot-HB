@@ -29,12 +29,9 @@
 	$(document).ready(function(){
 
 		// sets the current user and current room
-		var logged_in_user='{{ user }}';
-		console.log(logged_in_user);
-		var current_room = '';
-		var user_private_key = null;
-		var user_public_key = null;
-		var other_public_key = null;
+		var logged_in_user='{{ user }}',
+			current_room = '';
+
 
 
 		// connect the socket
@@ -52,9 +49,9 @@
 
 		// when a user's room receives a command
 		socket.on('interpret command', function(data){
-			var command = data.command
-			var command_body = data.body
-			var command_origin = data.origin
+			var command = data.command,
+				command_body = data.body,
+				command_origin = data.origin;
 
 			// if that command is a J (for join), join them to the given room
 			if(command == 'J'){
