@@ -33,7 +33,6 @@
 			current_room = '';
 
 
-
 		// connect the socket
 	    var socket = io.connect('http://' + document.domain + ':' + location.port + "/chat");
 
@@ -54,8 +53,7 @@
 				command_origin = data.origin;
 
 			// if that command is a J (for join), join them to the given room
-			if(command == 'J'){
-				console.log('join');
+			if(command === 'J'){
 				var new_room = command_body
 				socket.emit('join room', {'username': logged_in_user, 'room': new_room}); 
 				$('#chat_box').removeClass('hidden');
@@ -63,7 +61,7 @@
 				current_room = new_room
 			}
 			// if the user receives a UL (update list) command, refresh their list of connected users
-			if(command == 'UL'){
+			if(command === 'UL'){
 				$('#online_users').load('/refresh_users?user=' + logged_in_user);
 			}
 
@@ -105,13 +103,11 @@
 
 		$(document).on('submit', 'form', function(event){
 			event.preventDefault();
-			var this_ = $(this)
-			var chat_room = this_.parent('.chat_box').attr('id');
-			console.log(chat_room);
-			console.log(this_.serialize());
-			var message = this_.find('input[name="message"]').val();
+			var this_ = $(this),
+				chat_room = this_.parent('.chat_box').attr('id'),
+				message = this_.find('input[name="message"]').val(),
+				ronnie = new RegExp('AskRonnie');
 
-			var ronnie = new RegExp('AskRonnie');
 			if(ronnie.test(chat_room)){
 				$('#' + chat_room + ' div.log').append('<p class="self_color">' + logged_in_user + ': ' + message + '</p>');
 	    		$('.log').scrollTop($('.log')[0].scrollHeight);
@@ -137,7 +133,7 @@
 	    socket.on('message to display', function(response){
 	    	var chat_room = response.room;
 	    	// console.log($("#" + chat_room + " div.log"));
-	    	if(response.user == logged_in_user){
+	    	if(response.user === logged_in_user){
 	    		$('#' + chat_room + ' div.log').append('<p class="self_color">' + response.user + ': ' + response.message + '</p>');
 	    		$('.log').scrollTop($('.log')[0].scrollHeight);
 	    	}
