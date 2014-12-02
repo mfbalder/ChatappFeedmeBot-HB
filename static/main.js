@@ -2,8 +2,7 @@ $(document).ready(function() {
 
     /********* WHEN A USER LOGS INTO THE SYSTEM **********/
 
-    // set the 
-    current room
+    // set the current room
     var currentRoom = '';
 
     // connect the socket
