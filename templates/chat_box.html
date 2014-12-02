@@ -1,13 +1,13 @@
 
-	<div class="chat_box" id="{{ room }}">
-		<button class="end_chat">X</button>
-		<p class='chat_label'>Chat With {{ receiving_user }}</p>
+	<div class="chat-box" id="{{ room }}">
+		<button class="end-chat">X</button>
+		<p class='chat-label'>Chat With {{ receiving_user }}</p>
 		<div class="log">
 		</div>
 
-		<form class="send_message">
+		<form class="send-message">
 			<input name="message" type="text" placeholder="Your message">
-			<input type="submit" class="button_style">
+			<input type="submit" class="button-style">
 			<input type="hidden" value="{{ receiving_user }}">
 		</form>
 	</div>

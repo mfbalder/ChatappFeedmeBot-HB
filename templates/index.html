@@ -2,7 +2,7 @@
 	{% extends "base.html" %}
 	{% block body %}
 
-	<div id='online_users'>
+	<div id='online-users'>
 		<h4>Connected Users</h4>
 		{% if users %}
 			<ul>
@@ -17,7 +17,7 @@
 		{% endif %}
 	</div>
 
-	<div id="chat_section">
+	<div id="chat-section">
 	</div>
 
 
@@ -60,14 +60,14 @@
 							{'username':  loggedInUser, 'room': newRoom}
 				); 
 
-				$('#chat_box').removeClass('hidden');
+				$('#chat-box').removeClass('hidden');
 				// establish that this new room is the room we're currently talking in
 				currentRoom = newRoom
 			}
 
 			// if the user receives a UL (update list) command, refresh their list of connected users
 			else if(command === 'UL') {
-				$('#online_users').load('/refresh_users?user=' +  loggedInUser);
+				$('#online-users').load('/refresh_users?user=' +  loggedInUser);
 			}
 
 		});
@@ -104,7 +104,7 @@
 			if($('#' + event.chat_room).length === 0) {
 				console.log("The chatroom doesn't exist yet, add it");
 				var html = event.template;
-				$('#chat_section').append(html);
+				$('#chat-section').append(html);
 			}
 			else {
 				console.log("The chatroom already exists. Don't add it");
@@ -115,14 +115,14 @@
 		$(document).on('submit', 'form', function(event) {
 			event.preventDefault();
 			var _this = $(this),
-				chat_room = _this.parent('.chat_box').attr('id'),
+				chat_room = _this.parent('.chat-box').attr('id'),
 				message = _this.find('input[name="message"]').val(),
 				ronnie = new RegExp('AskRonnie');
 
 			if(ronnie.test(chat_room)) {
 				var $log = $('.log');
 
-				$('#' + chat_room + ' div.log').append('<p class="self_color">' +  loggedInUser + ': ' + message + '</p>');
+				$('#' + chat_room + ' div.log').append('<p class="self-color">' +  loggedInUser + ': ' + message + '</p>');
 	    		$log.scrollTop($log[0].scrollHeight);
 	    		socket.emit('talk to ronnie', 
 	    					{'message': message, 'room': chat_room}
@@ -137,14 +137,14 @@
 		});
 
 		// if the user closes the window, remove it from their DOM
-		$(document).on('click', '.end_chat', function(event) {
+		$(document).on('click', '.end-chat', function(event) {
 			var _this = $(this);
 
 			// send a message telling the other user that the chat has been exited
 			socket.emit('message event', 
-						{data:  loggedInUser + ' has left the chat.', 'room': _this.parent('.chat_box').attr('id')}
+						{data:  loggedInUser + ' has left the chat.', 'room': _this.parent('.chat-box').attr('id')}
 			);
-			_this.parent('.chat_box').remove();
+			_this.parent('.chat-box').remove();
 			// remove the user from that joint room
 		});
 
@@ -157,11 +157,11 @@
 	    		$chatRoomLog = $('#' + chatRoom + ' div.log');
 	    	// console.log($("#" + chat_room + " div.log"));
 	    	if(response.user ===  loggedInUser) {
-	    		$chatRoomLog.append('<p class="self_color">' + response.user + ': ' + response.message + '</p>');
+	    		$chatRoomLog.append('<p class="self-color">' + response.user + ': ' + response.message + '</p>');
 	    		$log.scrollTop($log[0].scrollHeight);
 	    	}
 	    	else {
-	    		$chatRoomLog.append('<p class="other_color">' + response.user + ': ' + response.message + '</p>');
+	    		$chatRoomLog.append('<p class="other-color">' + response.user + ': ' + response.message + '</p>');
 	    		$log.scrollTop($log[0].scrollHeight);
 	    	}
 	    	// $("#" + chatRoom + " div.log").append('<p>' + response.user + ': ' + response.message + '</p>');
@@ -191,19 +191,19 @@
 		});
 
 
-		$(document).on('mousedown', '.button_style', function(event) {
+		$(document).on('mousedown', '.button-style', function(event) {
 			$(this).css('backgroundColor', 'lightGrey');
 		});
 
-		$(document).on('mouseup', '.button_style', function(event) {
+		$(document).on('mouseup', '.button-style', function(event) {
 			$(this).css('backgroundColor', 'gray');
 		});
 
-		$(document).on('focusout', '.chat_box', function(event) {
+		$(document).on('focusout', '.chat-box', function(event) {
 			$(this).addClass('blurred');
 		});
 
-		$(document).on('focusin', '.chat_box', function(event) {
+		$(document).on('focusin', '.chat-box', function(event) {
 			$(this).removeClass('blurred');
 		});
 	
