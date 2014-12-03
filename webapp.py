@@ -32,6 +32,7 @@ def get_user():
 
 def reset_ronnie():
 	"""Resets AskRonnie bot so that it's ready to start from the beginning"""
+	
 	global ronniechat, next_state
 
 	ronniechat = False

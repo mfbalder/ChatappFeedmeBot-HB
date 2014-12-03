@@ -110,6 +110,7 @@ def get_query_action_and_addition(current_state, answer):
 
 def get_next_question(next_state):
 	"""Gets the next question, based on what the next state is."""
+	
 	try:
 		return d[locals()['next_state']]['bot_statement']
 	except KeyError:
