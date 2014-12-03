@@ -96,7 +96,7 @@ to add them to your environment variables:
 
 ```bot_path.py```: Contains the question path dictionary for AskRonnie
 
-```send_message.py```: Handles the call to thw Twilio API
+```send_message.py```: Handles the call to the Twilio API
 
 ```Templates```: All html files extend from ```base.html``` using Jinja
 
