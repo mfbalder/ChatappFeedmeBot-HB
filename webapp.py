@@ -35,9 +35,9 @@ def reset_ronnie():
 	global ronniechat, next_state
 
 	ronniechat = False
-	bot.query = """SELECT R.name FROM Restaurants AS R join Categories AS C
-				   ON R.id=C.business_id join CategoryLookup AS L 
-				   ON L.category=C.category"""
+	bot.query = """SELECT r.name FROM restaurants AS r join categories AS c
+				   ON r.id=c.business_id join categoryLookup AS l 
+				   ON l.category=c.category"""
 	last_state = None
 	next_state = None
 
@@ -91,6 +91,7 @@ def logout():
 @app.route("/set_session")
 def set_session():
 	"""Is run on submit of the login form, & adds user to the session."""
+
 	global connected_users
 
 	# get the current logged in user, and set that to the session
@@ -112,6 +113,7 @@ def refresh_connected_users():
 	Whenever a user logs into or out of the system, this is called to refresh 
 	all users' connected list.
 	"""
+
 	global connected_users
 
 	user = request.args.get("user")
@@ -124,6 +126,7 @@ def refresh_connected_users():
 @app.route("/send_text")
 def send_text():
 	"""When user clicks on Ronnie's 'text address' link, this calls the Twilio text function."""
+	
 	location = request.args.get("location")
 	phone_num = request.args.get("number")
 
@@ -158,6 +161,7 @@ def refresh_connecteduser_lists():
 
 	This is called anytime anyone logs into or out of the app.
 	"""
+
 	global connected_users
 
 	if connected_users:
@@ -169,6 +173,7 @@ def refresh_connecteduser_lists():
 @socketio.on('message event', namespace='/chat')
 def new_message(message):
 	"""When a message is submitted, sends message to the appropriate room."""
+
 	print message['data']
 	send_message(message['data'], message['room'])
 
@@ -208,6 +213,7 @@ def no_ronnie_chat_yet(message):
 								 'room': message['room'] }, 
 								room=message['room'])
 
+
 @socketio.on('talk to ronnie', namespace='/chat')
 def talk_to_ronnie(message):
 	"""Manages the conversation with Ronnie and his path.
@@ -219,6 +225,7 @@ def talk_to_ronnie(message):
 	next state should be, and what question to ask based on the previous 
 	question, and how it was answered (message['message'])
 	"""
+
 	global next_state, last_state, ronniechat, city
 
 	answer = message['message']
@@ -323,14 +330,17 @@ def talk_to_ronnie(message):
 											room=message['room'])
 		return
 
+
 @socketio.on('receive command', namespace='/chat')
 def receive_command(command):
 	"""Sends any commands (join, update list, etc.) to a user's room to be interpreted"""
+
 	send_command(command['command'], command['body'], command['room'])
 
 @socketio.on('join room', namespace='/chat')
 def on_join(data):
 	"""Joins the user to a Flask-SocketIO room"""
+
 	global connected_users
 
 	user = data['username']
@@ -343,13 +353,14 @@ def on_join(data):
 	print "connected users in join room", connected_users
 	refresh_connecteduser_lists()
 
+
 @socketio.on('open chat', namespace='/chat')
 def open_chat(data):
 	"""Tells both the sending and receiving users' browsers to open new chat windows.
 
 	Is called when a username in 'Connected Users' is clicked on
 	"""
-	
+
 	room = data['room']
 	submitting_user = data['submitting']
 	receiving_user = data['receiving']
@@ -361,13 +372,12 @@ def open_chat(data):
 						    'receiving_user': receiving_user, 
 						    'chat_room': room }, 
 						   room=submitting_user)
+
 	emit('open chat box', { 'template': render_template("chat_box.html", 
 										room=room, 
 										receiving_user=submitting_user), 
 						    'chat_room': room }, 
 						   room=receiving_user)
-
-
 
 
 
@@ -379,6 +389,7 @@ def open_chat(data):
 def test_connect():
 	print('Connected')
 	emit('connected', {'data': 'Connected'})
+
 
 @socketio.on('disconnect', namespace='/chat')
 def test_disconnect():

@@ -151,7 +151,7 @@ def traverse_questions(state, user_answer):
 		if d[locals()['state']]['return'] == 'question':
 			# get the next state
 			next_state = get_next_state(state, user_answer)
-			if next_state == None:
+			if next_state is None:
 				return None, None
 
 			# get the next question
@@ -200,13 +200,7 @@ def traverse_questions(state, user_answer):
 				return None, "I give you..." + result[0] + "!"
 
 			return next_state, bot_question
-			
+
 	except KeyError:
 		return None, None
 	
-
-def main():
-	pass
-
-if __name__ == "__main__":
-	main()
